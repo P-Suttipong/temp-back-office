@@ -1,33 +1,20 @@
 <template>
   <q-page>
-    <div class="row justify-center">
+    <!-- <div class="row justify-center">
       <p class="title">รายการอุปกรณ์</p>
-    </div>
+    </div> -->
 
-    <div class="row justify-center">
-      <!-- <q-input outlined v-model="userId" label="User ID">
-        <template v-slot:append>
-          <q-icon
-            v-if="userId !== ''"
-            name="close"
-            @click="userId = ''"
-            class="cursor-pointer"
-          />
-          <q-icon name="search" />
-        </template>
-      </q-input> -->
-      <q-btn-dropdown label="Select User ID">
+    <!-- <div class="row justify-center id-selecter">
+      <q-btn-dropdown outline rounded label="Select User ID">
         <q-list v-for="item in userListId" :key="item.index">
           <q-item clickable v-close-popup>
-            <q-item-section>
-              <q-item-label @click="searcByhUserId(item)">{{
-                item
-              }}</q-item-label>
+            <q-item-section @click="searcByhUserId(item)">
+              <q-item-label>{{ item }}</q-item-label>
             </q-item-section>
           </q-item>
         </q-list>
       </q-btn-dropdown>
-    </div>
+    </div> -->
     <div class="row justify-center ">
       <div
         v-if="this.$q.platform.is.desktop || this.$q.platform.is.ipad"
@@ -40,8 +27,33 @@
           :pagination="pagination"
           :loading="loading"
           :filter="searchUserId"
-          no-data-label="ไม่มีข้อมูลที่ต้องการ"
+          no-data-label="No data"
         >
+          <template v-slot:top-left>
+            <p class="title">Devices List</p>
+          </template>
+
+          <template v-slot:top-right>
+            <div class="id-selecter">
+              <q-btn-dropdown
+                class="btn-selecter"
+                rounded
+                flat
+                :label="searchUserId === '' ? 'Show All' : searchUserId"
+              >
+                <q-list v-for="item in userListId" :key="item.index">
+                  <q-item-section clickable v-close-popup>
+                    <q-item-section @click="searcByhUserId(item)">
+                      <q-item-label class="item-label cursor-pointer">{{
+                        item
+                      }}</q-item-label>
+                    </q-item-section>
+                  </q-item-section>
+                </q-list>
+              </q-btn-dropdown>
+            </div>
+          </template>
+
           <template v-slot:loading>
             <q-inner-loading showing color="primary" />
           </template>
@@ -50,11 +62,12 @@
             <q-td :props="props">
               <div>
                 <q-btn
+                  class="description-btn"
                   @click="openSetting(props.row)"
-                  icon="description"
                   dense
                   flat
-                ></q-btn>
+                  >description</q-btn
+                >
               </div>
             </q-td>
           </template>
@@ -71,8 +84,28 @@
           :pagination="pagination"
           :filter="searchUserId"
           :loading="loading"
-          no-data-label="ไม่มีข้อมูลที่ต้องการ"
+          no-data-label="No data"
         >
+          <template v-slot:top-left>
+            <p class="title">Devices List</p>
+          </template>
+
+          <template v-slot:top-right>
+            <div class="id-selecter">
+              <q-btn-dropdown outline rounded label="Select User ID">
+                <q-list v-for="item in userListId" :key="item.index">
+                  <q-item-section clickable v-close-popup>
+                    <q-item-section @click="searcByhUserId(item)">
+                      <q-item-label class="item-label cursor-pointer">{{
+                        item
+                      }}</q-item-label>
+                    </q-item-section>
+                  </q-item-section>
+                </q-list>
+              </q-btn-dropdown>
+            </div>
+          </template>
+
           <template v-slot:loading>
             <q-inner-loading showing color="primary" />
           </template>
@@ -81,6 +114,7 @@
             <q-td :props="props">
               <div>
                 <q-btn
+                  class="description-btn-mobile"
                   @click="openSetting(props.row)"
                   icon="description"
                   dense
@@ -102,17 +136,28 @@
 
         <q-card-section class="q-pa-lg">
           <div class="row">
-            <p>Device ID:</p>
-            <q-badge class="q-ml-md badge-id">{{ modal.deviceId }}</q-badge>
+            <p class="q-mr-sm data-title">Device ID :</p>
+            <p>{{ modal.deviceId }}</p>
+            <!-- <q-badge class="q-ml-md badge-id">{{ modal.deviceId }}</q-badge> -->
           </div>
 
           <div class="row">
-            <p>IMEI: {{ modal.imei }}</p>
+            <p class="q-mr-sm data-title">User ID :</p>
+            <p>{{ modal.userId }}</p>
             <!-- <q-badge class="q-ml-md badge-id">{{ modal.imei }}</q-badge> -->
           </div>
 
           <div class="row">
-            <p>Current Temperature: {{ modal.currentTemp }}°C</p>
+            <p class="q-mr-sm data-title">IMEI :</p>
+            <p>{{ modal.imei }}</p>
+            <!-- <q-badge class="q-ml-md badge-id">{{ modal.imei }}</q-badge> -->
+          </div>
+
+          <div class="row">
+            <p class="q-mr-sm data-title">
+              Current Temperature :
+            </p>
+            <p>{{ modal.currentTemp }}°C</p>
             <!-- <q-badge class="q-ml-md badge-id"
               >{{ modal.currentTemp }}°C</q-badge
             > -->
@@ -120,7 +165,7 @@
 
           <q-form class="q-gutter-sm q-mt-xs modal-form">
             <div>
-              <p>Device Name</p>
+              <p class="data-title">Device Name</p>
               <q-input
                 square
                 filled
@@ -133,7 +178,7 @@
 
             <div class="row justify-between">
               <div class="col-6  q-pr-sm">
-                <p>Min Temperature</p>
+                <p class="data-title">Min Temperature</p>
                 <q-input
                   square
                   filled
@@ -144,7 +189,7 @@
                 />
               </div>
               <div class="col-6 q-pl-sm">
-                <p>Max Temperature</p>
+                <p class="data-title">Max Temperature</p>
                 <q-input
                   square
                   filled
@@ -156,7 +201,7 @@
               </div>
             </div>
             <div>
-              <p>Send Line</p>
+              <p class="data-title">Send Line</p>
               <q-input
                 square
                 filled
@@ -170,8 +215,32 @@
         </q-card-section>
 
         <q-card-section class="row justify-center">
-          <q-btn color="primary">บันทึกการตั้งค่า</q-btn>
+          <q-btn rounded @click="openConfirm" color="primary">editing save</q-btn>
         </q-card-section>
+      </q-card>
+    </q-dialog>
+
+    <q-dialog v-model="openConfirmModal" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <!-- <q-avatar icon="signal_wifi_off" color="primary" text-color="white" /> -->
+          <span class="q-ml-sm"
+            ><p style="font-size: 18px" class="q-mt-md q-px-xl">
+              Comfirm Editing ?
+            </p></span
+          >
+        </q-card-section>
+
+        <q-card-actions align="center">
+          <q-btn flat label="Cancel" color="red" v-close-popup />
+          <q-btn
+            @click="confirmUpdate"
+            flat
+            label="Submit"
+            color="green"
+            v-close-popup
+          />
+        </q-card-actions>
       </q-card>
     </q-dialog>
   </q-page>
@@ -184,6 +253,7 @@ export default {
   data() {
     return {
       isOpenModal: false,
+      openConfirmModal: false,
       searchUserId: "",
       modal: {
         deviceId: "",
@@ -306,14 +376,20 @@ export default {
     }
   },
   methods: {
+    async openConfirm() {
+      this.openConfirmModal = true;
+    },
+    async confirmUpdate() {
+      this.isOpenModal = false;
+    },
     async searcByhUserId(id) {
       this.loading = true;
-      if (id === "แสดงทั้งหมด") {
+      if (id === "Show All") {
         this.searchUserId = "";
       } else {
         this.searchUserId = id;
       }
-      console.log(this.searchUserId)
+      console.log(this.searchUserId);
       this.loading = false;
     },
     async openSetting(row) {
@@ -324,7 +400,8 @@ export default {
         currentTemp: row.currentTemp,
         maxTemp: row.maxTemp,
         minTemp: row.minTemp,
-        sendLine: row.sendLine
+        sendLine: row.sendLine,
+        userId: row.userId
       };
       this.isOpenModal = true;
       console.log(this.modal.deviceId);
@@ -349,11 +426,72 @@ button {
   font-family: "prompt";
 }
 
-.title {
-  padding-top: 32px;
-  font-size: 32px;
+.description-btn {
+  width: 120px;
+  border-radius: 50px;
+  background-color: #0288d1;
+  color: white;
 }
+
+.description-btn:hover {
+  width: 120px;
+  cursor: pointer;
+  border-radius: 50px;
+  background-color: #2c323f;
+  color: white;
+  animation: pulse;
+  animation-duration: 1s;
+}
+
+.description-btn-mobile {
+  width: 60px;
+  font-size: 12px;
+  border-radius: 50px;
+  background-color: #0288d1;
+  color: white;
+}
+
+.description-btn-mobile:hover {
+  width: 60px;
+  font-size: 12px;
+  border-radius: 50px;
+  background-color: #2c323f;
+  color: white;
+}
+
+.id-selecter {
+  padding: 0px;
+}
+
+.btn-selecter {
+  border: solid 1px #c2c2c2;
+  width: 220px;
+}
+
+.item-label {
+  padding: 10px;
+  padding-left: 20px;
+  font-family: "prompt";
+}
+
+.item-label:hover {
+  color: #0288d1;
+}
+
+.title {
+  padding-top: 20px;
+  font-size: 28px;
+}
+
+.data-title {
+  font-family: "prompt";
+  font-weight: bolder;
+  font-size: 15px;
+}
+
 .device-table {
+  padding-left: 20px;
+  padding-right: 20px;
   width: 80vw;
 }
 .modal-form {
@@ -373,10 +511,12 @@ button {
 /* Mobile */
 @media only screen and (max-width: 420px) {
   .title {
-    padding-top: 30px;
+    padding-top: 0px;
     font-size: 20px;
   }
   .device-table {
+    padding-left: 0px;
+    padding-right: 0px;
     width: 90vw;
   }
   .modal-form {
@@ -387,10 +527,12 @@ button {
 /* Tablet Ipad */
 @media only screen and (min-width: 500px) and (max-width: 1025px) {
   .title {
-    padding-top: 15px;
-    font-size: 32px;
+    padding-top: 0px;
+    font-size: 28px;
   }
   .device-table {
+    padding-left: 15px;
+    padding-right: 15px;
     width: 85vw;
   }
   .modal-form {

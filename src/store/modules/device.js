@@ -21,6 +21,80 @@ const state = {
       userId: "USER002"
     }
   ],
+  userData: [
+    {
+      id: "USER001",
+      username: "user001",
+      firstname: "John",
+      lastname: "Yatch",
+      phoneNumber: 123456789,
+      userEnabled: true,
+      lineKey: "XXX"
+    },
+    {
+      id: "USER002",
+      username: "user002",
+      firstname: "Marine",
+      lastname: "Hock",
+      phoneNumber: 987654321,
+      userEnabled: false,
+      lineKey: "XXX"
+    },
+    {
+      id: "USER003",
+      username: "user001",
+      firstname: "John",
+      lastname: "Yatch",
+      phoneNumber: 123456789,
+      userEnabled: true,
+      lineKey: "XXX"
+    },
+    {
+      id: "USER004",
+      username: "user002",
+      firstname: "Marine",
+      lastname: "Hock",
+      phoneNumber: 987654321,
+      userEnabled: false,
+      lineKey: "XXX"
+    },
+    {
+      id: "USER005",
+      username: "user001",
+      firstname: "John",
+      lastname: "Yatch",
+      phoneNumber: 123456789,
+      userEnabled: true,
+      lineKey: "XXX"
+    },
+    {
+      id: "USER006",
+      username: "user002",
+      firstname: "Marine",
+      lastname: "Hock",
+      phoneNumber: 987654321,
+      userEnabled: false,
+      lineKey: "XXX"
+    },
+    {
+      id: "USER007",
+      username: "user001",
+      firstname: "John",
+      lastname: "Yatch",
+      phoneNumber: 123456789,
+      userEnabled: true,
+      lineKey: "XXX"
+    },
+    {
+      id: "USER008",
+      username: "user002",
+      firstname: "Marine",
+      lastname: "Hock",
+      phoneNumber: 987654321,
+      userEnabled: false,
+      lineKey: "XXX"
+    }
+  ],
   userListId: []
 };
 
@@ -32,7 +106,7 @@ const actions = {
     await state.deviceData.map(device => {
       commit("SET_USERLIST_ID", device.userId);
     });
-    await commit("SET_USERLIST_ID", "แสดงทั้งหมด");
+    await commit("SET_USERLIST_ID", "Show All");
   }
 };
 
@@ -43,6 +117,15 @@ const mutations = {
   },
   CLEAR_USERLIST_ID(state) {
     state.userListId = [];
+  },
+  CHANGE_USER_ENABLED(state, payload) {
+    console.log(payload);
+    state.userData.map(user => {
+      if (user.id === payload.id) {
+        user.userEnabled = payload.value;
+      }
+    });
+    // state.userData.userEnabled = payload;
   }
 };
 
