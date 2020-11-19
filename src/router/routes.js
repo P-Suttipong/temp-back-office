@@ -2,6 +2,8 @@ import AuthLayout from "../layouts/AuthLayout.vue";
 import Login from "../pages/Login.vue";
 import Device from "pages/Device.vue";
 import UserList from "pages/UserList.vue";
+import AddDevice from "pages/AddDevice.vue";
+import AddUser from "pages/AddUser.vue";
 
 const authPage = {
   path: "",
@@ -32,6 +34,20 @@ const routes = [
       {
         path: "userlist",
         component: UserList,
+        meta: {
+          requiresAuth: true
+        }
+      },
+      {
+        path: "adddevice",
+        component: AddDevice,
+        meta: {
+          requiresAuth: true
+        }
+      },
+      {
+        path: "adduser",
+        component: AddUser,
         meta: {
           requiresAuth: true
         }

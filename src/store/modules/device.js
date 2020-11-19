@@ -103,8 +103,8 @@ const getters = {};
 const actions = {
   fetchUserListId: async ({ commit, state }) => {
     await commit("CLEAR_USERLIST_ID");
-    await state.deviceData.map(device => {
-      commit("SET_USERLIST_ID", device.userId);
+    await state.userData.map(user => {
+      commit("SET_USERLIST_ID", user.id);
     });
     await commit("SET_USERLIST_ID", "Show All");
   }

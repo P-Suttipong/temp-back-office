@@ -154,17 +154,18 @@
 
         <q-card-section class="q-pa-lg">
           <div class="row">
-            <p>ID:</p>
+            <p class="data-title">ID :</p>
             <q-badge class="q-ml-md badge-id">{{ modal.id }}</q-badge>
           </div>
 
           <div class="row">
-            <p>Username: {{ modal.username }}</p>
+            <p class="data-title q-mr-sm">Username :</p>
+            <p>{{ modal.username }}</p>
             <!-- <q-badge class="q-ml-md badge-id">{{ modal.imei }}</q-badge> -->
           </div>
 
           <div class="row">
-            <p class="q-mt-xs q-mr-md">Status:</p>
+            <p class="q-mt-xs q-mr-md data-title">Status :</p>
             <q-btn
               :color="modal.userEnabled == true ? 'green' : 'red'"
               @click="toggleEnabledChange(modal)"
@@ -177,7 +178,7 @@
           <q-form class="q-gutter-sm q-mt-xs modal-form">
             <div class="row justify-between">
               <div class="col-6  q-pr-sm">
-                <p>Firstname</p>
+                <p class="data-title">Firstname</p>
                 <q-input
                   square
                   filled
@@ -188,7 +189,7 @@
                 />
               </div>
               <div class="col-6 q-pl-sm">
-                <p>Lastname</p>
+                <p class="data-title">Lastname</p>
                 <q-input
                   square
                   filled
@@ -201,7 +202,7 @@
             </div>
 
             <div>
-              <p>Phone Number</p>
+              <p class="data-title">Phone Number</p>
               <q-input
                 square
                 filled
@@ -213,7 +214,7 @@
             </div>
 
             <div>
-              <p>Line Key</p>
+              <p class="data-title">Line Key</p>
               <q-input
                 square
                 filled
@@ -225,7 +226,7 @@
             </div>
 
             <div>
-              <p class="q-mt-md">Device List</p>
+              <p class="q-mt-md data-title">Device List</p>
               <q-list>
                 <q-item tag="label" v-ripple>
                   <q-item-section>
@@ -264,7 +265,9 @@
         </q-card-section>
 
         <q-card-section class="row justify-center">
-          <q-btn rounded @click="openConfirm" color="primary">Editing save</q-btn>
+          <q-btn rounded @click="openConfirm" color="primary"
+            >Editing save</q-btn
+          >
         </q-card-section>
       </q-card>
     </q-dialog>

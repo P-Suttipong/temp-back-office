@@ -28,6 +28,7 @@
           :loading="loading"
           :filter="searchUserId"
           no-data-label="No data"
+          @mouseover.native="bg - red"
         >
           <template v-slot:top-left>
             <p class="title">Devices List</p>
@@ -215,7 +216,9 @@
         </q-card-section>
 
         <q-card-section class="row justify-center">
-          <q-btn rounded @click="openConfirm" color="primary">editing save</q-btn>
+          <q-btn rounded @click="openConfirm" color="primary"
+            >editing save</q-btn
+          >
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -483,17 +486,12 @@ button {
   font-size: 28px;
 }
 
-.data-title {
-  font-family: "prompt";
-  font-weight: bolder;
-  font-size: 15px;
-}
-
 .device-table {
   padding-left: 20px;
   padding-right: 20px;
   width: 80vw;
 }
+
 .modal-form {
   width: 25vw;
 }

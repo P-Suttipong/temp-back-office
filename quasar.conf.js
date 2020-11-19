@@ -111,8 +111,8 @@ module.exports = function(/* ctx */) {
       workboxPluginMode: "GenerateSW", // 'GenerateSW' or 'InjectManifest'
       workboxOptions: {}, // only for GenerateSW
       manifest: {
-        name: `Quasar App`,
-        short_name: `Quasar App`,
+        name: `Cold Room Back Office`,
+        short_name: `Cold Room`,
         description: `A Quasar Framework app`,
         display: "standalone",
         orientation: "portrait",

@@ -2,7 +2,7 @@
   <q-layout view="lHh Lpr lFf">
     <div v-if="this.$q.platform.is.mobile && !this.$q.platform.is.ipad">
       <q-header elevated class="row justify-between mobile-header">
-        <p class="header-title q-mt-lg q-ma-md">ระบบควมคุมห้องเย็น</p>
+        <p class="header-title q-mt-lg q-ma-md">Cold Room BO</p>
         <q-btn
           class="menu-btn"
           @click="drawerRight = !drawerRight"
@@ -13,11 +13,19 @@
           side="right"
           v-model="drawerRight"
           show-if-above
-          :width="200"
+          :width="250"
           :breakpoint="500"
         >
           <q-scroll-area class="fit drawer-right">
             <q-list class="q-ml-sm q-mt-sm menu-list">
+              <q-item v-ripple>
+                <q-item-section avatar
+                  ><q-img width="30px" src="~assets/img/cold.png"></q-img>
+                </q-item-section>
+                <q-item-section class="drawer-title">
+                  Cold Room
+                </q-item-section></q-item
+              >
               <q-item
                 :active="deviceMenuActive"
                 active-class="is-active"
@@ -47,6 +55,38 @@
 
                 <q-item-section class="drawer-text">
                   Users List
+                </q-item-section>
+              </q-item>
+
+              <q-item
+                :active="addDeviceMenuActive"
+                active-class="is-active"
+                @click="addDeviceMenuSelected()"
+                clickable
+                v-ripple
+              >
+                <q-item-section avatar>
+                  <q-icon name="library_add" />
+                </q-item-section>
+
+                <q-item-section class="drawer-text">
+                  Add New Device
+                </q-item-section>
+              </q-item>
+
+              <q-item
+                :active="addUserMenuActive"
+                active-class="is-active"
+                @click="addUserMenuSelected()"
+                clickable
+                v-ripple
+              >
+                <q-item-section avatar>
+                  <q-icon name="person_add" />
+                </q-item-section>
+
+                <q-item-section class="drawer-text">
+                  Add New User
                 </q-item-section>
               </q-item>
 
@@ -80,6 +120,14 @@
     >
       <q-scroll-area class="fit drawer-header">
         <q-list padding>
+          <q-item v-ripple>
+            <q-item-section avatar
+              ><q-img width="30px" src="~assets/img/cold.png"></q-img>
+            </q-item-section>
+            <q-item-section class="drawer-title">
+              Cold Room Back Office
+            </q-item-section></q-item
+          >
           <q-item
             :active="deviceMenuActive"
             active-class="active"
@@ -112,9 +160,41 @@
             </q-item-section>
           </q-item>
 
-          <q-separator />
+          <q-item
+            :active="addDeviceMenuActive"
+            active-class="active"
+            @click="addDeviceMenuSelected()"
+            clickable
+            v-ripple
+          >
+            <q-item-section avatar>
+              <q-icon name="library_add" />
+            </q-item-section>
 
-          <q-item @click="logout()" clickable v-ripple>
+            <q-item-section class="drawer-text">
+              Add New Device
+            </q-item-section>
+          </q-item>
+
+          <q-item
+            :active="addUserMenuActive"
+            active-class="active"
+            @click="addUserMenuSelected()"
+            clickable
+            v-ripple
+          >
+            <q-item-section avatar>
+              <q-icon name="person_add" />
+            </q-item-section>
+
+            <q-item-section class="drawer-text">
+              Add New User
+            </q-item-section>
+          </q-item>
+
+          <q-separator class="separator" />
+
+          <q-item class="logout" @click="logout()" clickable v-ripple>
             <q-item-section avatar>
               <q-icon name="cancel" />
             </q-item-section>
@@ -143,6 +223,8 @@ export default {
       dialogMenu: false,
       deviceMenuActive: true,
       userMenuActive: false,
+      addDeviceMenuActive: false,
+      addUserMenuActive: false,
       drawer: false,
       miniState: true,
       deviceBtn: "is-active",
@@ -151,14 +233,40 @@ export default {
   },
   methods: {
     deviceMenuSelected() {
-      this.deviceMenuActive = true;
-      this.userMenuActive = false;
-      this.$router.push("/home");
+      if (this.deviceMenuActive != true) {
+        this.deviceMenuActive = true;
+        this.userMenuActive = false;
+        this.addDeviceMenuActive = false;
+        this.addUserMenuActive = false;
+        this.$router.push("/home");
+      }
     },
     userMenuSelected() {
-      this.deviceMenuActive = false;
-      this.userMenuActive = true;
-      this.$router.push("/userlist");
+      if (this.userMenuActive != true) {
+        this.deviceMenuActive = false;
+        this.userMenuActive = true;
+        this.addDeviceMenuActive = false;
+        this.addUserMenuActive = false;
+        this.$router.push("/userlist");
+      }
+    },
+    addDeviceMenuSelected() {
+      if (this.addDeviceMenuActive != true) {
+        this.deviceMenuActive = false;
+        this.userMenuActive = false;
+        this.addDeviceMenuActive = true;
+        this.addUserMenuActive = false;
+        this.$router.push("/adddevice");
+      }
+    },
+    addUserMenuSelected() {
+      if (this.addUserMenuActive != true) {
+        this.deviceMenuActive = false;
+        this.userMenuActive = false;
+        this.addDeviceMenuActive = false;
+        this.addUserMenuActive = true;
+        this.$router.push("/adduser");
+      }
     },
     async logout() {
       localStorage.removeItem("user");
@@ -169,9 +277,23 @@ export default {
     if (this.$route.path === "/") {
       this.deviceMenuActive = true;
       this.userMenuActive = false;
+      this.addDeviceMenuActive = false;
+      this.addUserMenuActive = false;
     } else if (this.$route.path === "/userlist") {
       this.deviceMenuActive = false;
       this.userMenuActive = true;
+      this.addDeviceMenuActive = false;
+      this.addUserMenuActive = false;
+    } else if (this.$route.path === "/adddevice") {
+      this.deviceMenuActive = false;
+      this.userMenuActive = false;
+      this.addDeviceMenuActive = true;
+      this.addUserMenuActive = false;
+    } else if (this.$route.path === "/adduser") {
+      this.deviceMenuActive = false;
+      this.userMenuActive = false;
+      this.addDeviceMenuActive = false;
+      this.addUserMenuActive = true;
     }
   }
 };
@@ -194,6 +316,11 @@ p {
   font-size: 21px;
 }
 .drawer-text {
+  font-family: "prompt";
+}
+.drawer-title {
+  font-size: 15px;
+  font-weight: bold;
   font-family: "prompt";
 }
 .menu-btn {
@@ -227,9 +354,16 @@ p {
   color: black;
 }
 
-@media only screen and (max-width: 360px) {
+.logout:hover {
+  background-color: rgba(255, 0, 0, 0.3);
+}
+
+@media only screen and (max-width: 400px) {
   .menu-btn {
-    padding-left: 15vw;
+    padding-left: 20vw;
   }
+}
+
+@media only screen and (min-height: 830px) {
 }
 </style>

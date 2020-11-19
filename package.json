@@ -2,7 +2,7 @@
   "name": "temp-back-office",
   "version": "0.0.1",
   "description": "A Quasar Framework app",
-  "productName": "Quasar App",
+  "productName": "Cold Room Back Office",
   "author": "P-Suttipong <60318722+P-Suttipong@users.noreply.github.com>",
   "private": true,
   "scripts": {
