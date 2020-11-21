@@ -4,9 +4,9 @@ const state = {
       deviceId: "TEMP00001",
       imei: "FA:FB:C5:94:AD",
       deviceName: "Device Name",
-      currentTemp: 1.5,
-      maxTemp: 7,
-      minTemp: -3,
+      currentTemp: 8,
+      maxTemp: 10,
+      minTemp: -10,
       sendLine: "Line",
       userId: "USER001"
     },
@@ -29,7 +29,8 @@ const state = {
       lastname: "Yatch",
       phoneNumber: 123456789,
       userEnabled: true,
-      lineKey: "XXX"
+      lineKey: "XXX",
+      deviceList: ["TEMP00001"]
     },
     {
       id: "USER002",
@@ -38,61 +39,8 @@ const state = {
       lastname: "Hock",
       phoneNumber: 987654321,
       userEnabled: false,
-      lineKey: "XXX"
-    },
-    {
-      id: "USER003",
-      username: "user001",
-      firstname: "John",
-      lastname: "Yatch",
-      phoneNumber: 123456789,
-      userEnabled: true,
-      lineKey: "XXX"
-    },
-    {
-      id: "USER004",
-      username: "user002",
-      firstname: "Marine",
-      lastname: "Hock",
-      phoneNumber: 987654321,
-      userEnabled: false,
-      lineKey: "XXX"
-    },
-    {
-      id: "USER005",
-      username: "user001",
-      firstname: "John",
-      lastname: "Yatch",
-      phoneNumber: 123456789,
-      userEnabled: true,
-      lineKey: "XXX"
-    },
-    {
-      id: "USER006",
-      username: "user002",
-      firstname: "Marine",
-      lastname: "Hock",
-      phoneNumber: 987654321,
-      userEnabled: false,
-      lineKey: "XXX"
-    },
-    {
-      id: "USER007",
-      username: "user001",
-      firstname: "John",
-      lastname: "Yatch",
-      phoneNumber: 123456789,
-      userEnabled: true,
-      lineKey: "XXX"
-    },
-    {
-      id: "USER008",
-      username: "user002",
-      firstname: "Marine",
-      lastname: "Hock",
-      phoneNumber: 987654321,
-      userEnabled: false,
-      lineKey: "XXX"
+      lineKey: "XXX",
+      deviceList: ["TEMP00002","TEMP00003"]
     }
   ],
   userListId: []

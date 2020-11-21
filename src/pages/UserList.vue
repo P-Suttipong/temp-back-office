@@ -228,17 +228,21 @@
             <div>
               <p class="q-mt-md data-title">Device List</p>
               <q-list>
-                <q-item tag="label" v-ripple>
-                  <q-item-section>
-                    <q-item-label
-                      >ID:TEMP00001 / Name: Device Name 1</q-item-label
-                    >
-                  </q-item-section>
-                  <q-item-section side>
-                    <q-btn flat icon="delete"></q-btn>
-                  </q-item-section>
-                </q-item>
-                <q-item tag="label" v-ripple>
+                <div v-for="device in modal.deviceList" :key="device">
+                  <q-item tag="label" v-ripple>
+                    <q-item-section>
+                      <q-item-label>{{ device }}</q-item-label>
+                    </q-item-section>
+                    <q-item-section side>
+                      <q-btn
+                        flat
+                        @click="deleteDeivceFromList(device)"
+                        icon="delete"
+                      ></q-btn>
+                    </q-item-section>
+                  </q-item>
+                </div>
+                <!-- <q-item tag="label" v-ripple>
                   <q-item-section>
                     <q-item-label
                       >ID:TEMP00002 / Name: Device Name 2</q-item-label
@@ -247,7 +251,7 @@
                   <q-item-section side>
                     <q-btn flat icon="delete"></q-btn>
                   </q-item-section>
-                </q-item>
+                </q-item> -->
               </q-list>
               <q-input filled bottom-slots v-model="text" label="Device ID">
                 <template v-slot:append>
@@ -264,9 +268,23 @@
           </q-form>
         </q-card-section>
 
-        <q-card-section class="row justify-center">
-          <q-btn rounded @click="openConfirm" color="primary"
-            >Editing save</q-btn
+        <q-card-section
+          v-if="this.$q.platform.is.desktop || this.$q.platform.is.ipad"
+          class="row justify-center"
+        >
+          <q-btn rounded class="q-mr-xs" @click="openConfirm" color="primary"
+            >editing save</q-btn
+          >
+          <q-btn rounded class="q-ml-xs" @click="openConfirm" color="negative"
+            >delete device</q-btn
+          >
+        </q-card-section>
+        <q-card-section v-else class="column justify-center">
+          <q-btn rounded class="q-mb-sm" @click="openConfirm" color="primary"
+            >editing save</q-btn
+          >
+          <q-btn rounded class="" @click="openConfirm" color="negative"
+            >delete device</q-btn
           >
         </q-card-section>
       </q-card>
@@ -317,7 +335,8 @@ export default {
         username: "",
         phoneNumber: "",
         userEnabled: "",
-        lineKey: ""
+        lineKey: "",
+        deviceList: []
       },
       pagination: {
         sortBy: "desc",
@@ -426,6 +445,7 @@ export default {
       this.openConfirmModal = true;
     },
     async openSetting(row) {
+      console.log(row);
       this.modal = await {
         id: row.id,
         firstname: row.firstname,
@@ -433,7 +453,8 @@ export default {
         username: row.username,
         phoneNumber: row.phoneNumber,
         userEnabled: row.userEnabled,
-        lineKey: row.lineKey
+        lineKey: row.lineKey,
+        deviceList: row.deviceList
       };
       this.isOpenModal = true;
     },
@@ -449,6 +470,17 @@ export default {
         value: this.toggleChangeValue
       });
       this.isOpenModal = false;
+    },
+    async deleteDeivceFromList(device) {
+      console.log(device);
+      let list = this.modal.deviceList;
+      await list.map((item, index) => {
+        if (item === device) {
+          list.splice(index);
+        }
+      });
+      this.modal.deviceList = list;
+      console.log(this.modal.deviceList);
     }
   },
   created() {
@@ -467,9 +499,6 @@ p {
 
 button {
   font-family: "prompt";
-}
-
-.id-selecter {
 }
 
 .toggle-btn {

@@ -28,7 +28,6 @@
           :loading="loading"
           :filter="searchUserId"
           no-data-label="No data"
-          @mouseover.native="bg - red"
         >
           <template v-slot:top-left>
             <p class="title">Devices List</p>
@@ -67,7 +66,21 @@
                   @click="openSetting(props.row)"
                   dense
                   flat
-                  >description</q-btn
+                  >setting</q-btn
+                >
+              </div>
+            </q-td>
+          </template>
+
+          <template v-slot:body-cell-description="props">
+            <q-td :props="props">
+              <div>
+                <q-btn
+                  class="description-btn"
+                  @click="openDescription(props.row)"
+                  dense
+                  flat
+                  >Description</q-btn
                 >
               </div>
             </q-td>
@@ -117,7 +130,21 @@
                 <q-btn
                   class="description-btn-mobile"
                   @click="openSetting(props.row)"
+                  icon="settings"
+                  dense
+                  flat
+                ></q-btn>
+              </div>
+            </q-td>
+          </template>
+
+          <template v-slot:body-cell-description="props">
+            <q-td :props="props">
+              <div>
+                <q-btn
+                  class="description-btn-mobile"
                   icon="description"
+                  @click="openDescription(props.row)"
                   dense
                   flat
                 ></q-btn>
@@ -128,9 +155,9 @@
       </div>
     </div>
     <q-dialog v-model="isOpenModal">
-      <q-card>
+      <q-card class="modal-card">
         <q-card-section class="row items-center q-pb-none">
-          <div class="q-ml-sm text-h6">Description</div>
+          <div class="q-ml-sm text-h6">Setting</div>
           <q-space />
           <q-btn icon="close" flat round dense v-close-popup />
         </q-card-section>
@@ -154,16 +181,6 @@
             <!-- <q-badge class="q-ml-md badge-id">{{ modal.imei }}</q-badge> -->
           </div>
 
-          <div class="row">
-            <p class="q-mr-sm data-title">
-              Current Temperature :
-            </p>
-            <p>{{ modal.currentTemp }}°C</p>
-            <!-- <q-badge class="q-ml-md badge-id"
-              >{{ modal.currentTemp }}°C</q-badge
-            > -->
-          </div>
-
           <q-form class="q-gutter-sm q-mt-xs modal-form">
             <div>
               <p class="data-title">Device Name</p>
@@ -177,7 +194,22 @@
               />
             </div>
 
-            <div class="row justify-between">
+            <div>
+              <p class="data-title q-mb-lg">Temperature</p>
+              <q-range
+                v-model="settingTemp"
+                color="positive"
+                :min="-20"
+                :max="20"
+                :left-label-color="'info'"
+                :right-label-color="'negative'"
+                :left-label-value="'Min: ' + settingTemp.min + '°C'"
+                :right-label-value="'Max: ' + settingTemp.max + '°C'"
+                label-always
+              />
+            </div>
+
+            <!-- <div class="row justify-between">
               <div class="col-6  q-pr-sm">
                 <p class="data-title">Min Temperature</p>
                 <q-input
@@ -200,7 +232,7 @@
                   placeholder="Max"
                 />
               </div>
-            </div>
+            </div> -->
             <div>
               <p class="data-title">Send Line</p>
               <q-input
@@ -215,10 +247,79 @@
           </q-form>
         </q-card-section>
 
-        <q-card-section class="row justify-center">
-          <q-btn rounded @click="openConfirm" color="primary"
+        <q-card-section
+          v-if="this.$q.platform.is.desktop || this.$q.platform.is.ipad"
+          class="row justify-center"
+        >
+          <q-btn rounded class="q-mr-xs" @click="openConfirm" color="primary"
             >editing save</q-btn
           >
+          <q-btn rounded class="q-ml-xs" @click="openConfirm" color="negative"
+            >delete device</q-btn
+          >
+        </q-card-section>
+        <q-card-section v-else class="column justify-center">
+          <q-btn rounded class="q-mb-sm" @click="openConfirm" color="primary"
+            >editing save</q-btn
+          >
+          <q-btn rounded class="" @click="openConfirm" color="negative"
+            >delete device</q-btn
+          >
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
+    <q-dialog v-model="descriptionModal">
+      <q-card class="description-modal">
+        <q-card-section class="row items-center q-pb-none">
+          <div class="text-h5">Description</div>
+          <q-space />
+          <q-btn icon="close" flat round dense v-close-popup />
+        </q-card-section>
+
+        <q-card-section>
+          <div class="row justify-center">
+            <p style="font-size: 16px">Current Temperature</p>
+          </div>
+          <div class="row justify-between">
+            <p
+              v-if="this.$q.platform.is.desktop || this.$q.platform.is.ipad"
+              class="q-mr-md description-text min q-mt-sm"
+            >
+              Min : {{ modal.minTemp }}°C
+            </p>
+            <p v-else class="description-text min q-mt-sm">
+              {{ modal.minTemp }}°C
+            </p>
+            <div class="temp-bar">
+              <q-linear-progress
+                stripe
+                rounded
+                size="30px"
+                :value="progress"
+                :color="barColor"
+                class="q-mt-sm"
+                track-color="grey-6"
+              >
+                <div class="absolute-full flex flex-center">
+                  <q-badge
+                    color="white"
+                    text-color="black"
+                    style="font-size: 15px; font-weight: 600"
+                    :label="`${modal.currentTemp}°C`"
+                  /></div
+              ></q-linear-progress>
+            </div>
+            <p
+              v-if="this.$q.platform.is.desktop || this.$q.platform.is.ipad"
+              class="q-ml-md description-text max q-mt-sm"
+            >
+              Max : {{ modal.maxTemp }}°C
+            </p>
+            <p v-else class="description-text max q-mt-sm">
+              {{ modal.maxTemp }}°C
+            </p>
+          </div>
         </q-card-section>
       </q-card>
     </q-dialog>
@@ -250,14 +351,69 @@
 </template>
 
 <script>
+import Vue from "vue";
 import { mapState } from "vuex";
+import VueApexCharts from "vue-apexcharts";
+Vue.use(VueApexCharts);
+Vue.component("apexchart", VueApexCharts);
+
 export default {
   name: "device",
+  components: {},
   data() {
     return {
+      progress: 0,
+      settingTemp: {
+        min: -30,
+        max: 30
+      },
+      options: {
+        chart: {
+          height: 500,
+          type: "radialBar"
+        },
+        colors: ["#20E647"],
+        plotOptions: {
+          radialBar: {
+            startAngle: -90,
+            endAngle: 90,
+            track: {
+              background: "#333",
+              startAngle: -90,
+              endAngle: 90
+            },
+            dataLabels: {
+              name: {
+                show: true,
+                color: "#000",
+                fontSize: "13px"
+              },
+              value: {
+                fontSize: "30px",
+                show: true
+              }
+            }
+          }
+        },
+        fill: {
+          type: "gradient",
+          gradient: {
+            shade: "dark",
+            type: "horizontal",
+            gradientToColors: ["#87D4F9"],
+            stops: [0, 100]
+          }
+        },
+        stroke: {
+          lineCap: "butt"
+        },
+        labels: ["asdasdsa"]
+      },
+      series: [44],
       isOpenModal: false,
       openConfirmModal: false,
       searchUserId: "",
+      descriptionModal: false,
       modal: {
         deviceId: "",
         imei: "",
@@ -285,19 +441,25 @@ export default {
           //   format: val => `${val}`,
           sortable: true
         },
-        {
-          name: "userID",
-          align: "left",
-          label: "User ID",
-          field: "userId",
-          sortable: true
-        },
+        // {
+        //   name: "userID",
+        //   align: "left",
+        //   label: "User ID",
+        //   field: "userId",
+        //   sortable: true
+        // },
         {
           name: "setting",
           align: "center",
-          label: "Description",
+          label: "Settings",
           field: "setting",
           sortable: true
+        },
+        {
+          name: "description",
+          align: "center",
+          label: "Description",
+          field: "description"
         }
       ],
       columns: [
@@ -356,15 +518,19 @@ export default {
           name: "send-line",
           align: "left",
           label: "Send Line",
-          field: "sendLine",
-          sortable: true
+          field: "sendLine"
         },
         {
           name: "setting",
           align: "center",
+          label: "Setting",
+          field: "setting"
+        },
+        {
+          name: "description",
+          align: "center",
           label: "Description",
-          field: "settin",
-          sortable: true
+          field: "description"
         }
       ]
     };
@@ -376,6 +542,27 @@ export default {
     }),
     pagesNumber() {
       return Math.ceil(this.rows.length / this.pagination.rowsPerPage);
+    },
+    barColor() {
+      console.log(this.barValue);
+      if (this.barValue > 0.7) {
+        return "negative";
+      } else if (this.barValue < 0.3) {
+        return "info";
+      } else {
+        return "positive";
+      }
+    },
+    barValue() {
+      if (
+        this.modal.currentTemp > this.modal.minTemp &&
+        this.modal.currentTemp < this.modal.maxTemp
+      ) {
+        let range = this.modal.maxTemp - this.modal.minTemp;
+        let value = this.modal.maxTemp - this.modal.currentTemp;
+        return (range - value) / range;
+      }
+      return 0;
     }
   },
   methods: {
@@ -406,8 +593,32 @@ export default {
         sendLine: row.sendLine,
         userId: row.userId
       };
+      this.settingTemp = {
+        min: row.minTemp,
+        max: row.maxTemp
+      };
       this.isOpenModal = true;
       console.log(this.modal.deviceId);
+    },
+    async openDescription(row) {
+      console.log(row);
+      this.progress = 0;
+      this.descriptionModal = true;
+      this.modal = await {
+        deviceId: row.deviceId,
+        deviceName: row.deviceName,
+        imei: row.imei,
+        currentTemp: row.currentTemp,
+        maxTemp: row.maxTemp,
+        minTemp: row.minTemp,
+        sendLine: row.sendLine,
+        userId: row.userId
+      };
+      this.interval = setInterval(() => {
+        if (this.progress <= this.barValue) {
+          this.progress = this.progress + 0.05;
+        }
+      }, 50);
     }
   },
   async beforeCreate() {
@@ -427,6 +638,23 @@ p {
 
 button {
   font-family: "prompt";
+}
+
+.description-text {
+  color: white;
+  padding: 4px 10px 4px 10px;
+  border-radius: 5px;
+  font-family: "prompt";
+  font-weight: 500;
+  font-size: 15px;
+}
+
+.min {
+  background-color: #31ccec;
+}
+
+.max {
+  background-color: #c10015;
 }
 
 .description-btn {
@@ -506,6 +734,17 @@ button {
   border-radius: 30px;
 }
 
+.description-modal {
+  max-width: 700px;
+  width: 50vw;
+  min-width: 500px;
+  padding: 10px 30px 20px 30px;
+}
+
+.temp-bar {
+  width: 18vw;
+}
+
 /* Mobile */
 @media only screen and (max-width: 420px) {
   .title {
@@ -519,6 +758,26 @@ button {
   }
   .modal-form {
     width: 100%;
+  }
+  .description-text {
+    color: white;
+    padding: 4px 10px 4px 10px;
+    border-radius: 5px;
+    font-family: "prompt";
+    font-weight: 500;
+    font-size: 14px;
+  }
+  .description-modal {
+    max-width: 700px;
+    width: 90vw;
+    min-width: 300px;
+    padding: 10px 3px 20px 3px;
+  }
+  .temp-bar {
+    width: 150px;
+  }
+  .modal-card {
+    min-width: 90vw;
   }
 }
 
@@ -535,6 +794,9 @@ button {
   }
   .modal-form {
     width: 100%;
+  }
+  .modal-card {
+    width: 500px;
   }
 }
 </style>
