@@ -2,7 +2,7 @@
   <q-layout view="lHh Lpr lFf">
     <div v-if="this.$q.platform.is.mobile && !this.$q.platform.is.ipad">
       <q-header elevated class="row justify-between mobile-header">
-        <p class="header-title q-mt-lg q-ma-md">Cold Room BO</p>
+        <p class="header-title q-mt-lg q-ma-md">Cold Room BO.</p>
         <q-btn
           class="menu-btn"
           @click="drawerRight = !drawerRight"
@@ -23,7 +23,7 @@
                   ><q-img width="30px" src="~assets/img/cold.png"></q-img>
                 </q-item-section>
                 <q-item-section class="drawer-title">
-                  Cold Room
+                  Backoffice
                 </q-item-section></q-item
               >
               <q-item
@@ -122,10 +122,10 @@
         <q-list padding>
           <q-item v-ripple>
             <q-item-section avatar
-              ><q-img width="30px" src="~assets/img/cold.png"></q-img>
+              ><q-img width="35px" src="~assets/img/cold.png"></q-img>
             </q-item-section>
             <q-item-section class="drawer-title">
-              Cold Room Back Office
+              Cold Room Backoffice
             </q-item-section></q-item
           >
           <q-item

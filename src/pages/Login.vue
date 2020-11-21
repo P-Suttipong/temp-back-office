@@ -2,7 +2,15 @@
   <q-page class="row justify-center items-center page">
     <div class="column">
       <div class="row justify-center">
-        <p class="login-title">Cold Room | Back Office</p>
+        <p
+          v-if="this.$q.platform.is.desktop || this.$q.platform.is.ipad"
+          class="login-title"
+        >
+          Cold Room | Back Office
+        </p>
+        <div class="column items-center justify-center" v-else>
+          <img class="login-image" src="~assets/img/coldroom.png" />
+        </div>
       </div>
       <div class="row">
         <q-card bordered class="card-padding shadow-20">
@@ -11,10 +19,7 @@
               v-if="this.$q.platform.is.desktop || this.$q.platform.is.ipad"
               class="col-5 column items-center justify-center"
             >
-              <img
-                class="login-image"
-                src="~assets/img/placeholder-image.png"
-              />
+              <img class="login-image" src="~assets/img/coldroom-reverse.png" />
             </div>
             <div class="col-6 col-mobile">
               <q-card-section>
@@ -121,7 +126,7 @@ button {
 .login-image {
   height: 230px;
   width: 20vw;
-  object-fit: cover;
+  object-fit: contain;
 }
 
 /* Mobile */
@@ -134,8 +139,8 @@ button {
   .login-image {
     padding-top: 8px;
     height: 210px;
-    width: 45vw;
-    object-fit: cover;
+    width: 50vw;
+    object-fit: contain;
   }
 
   .login-title {
@@ -160,7 +165,7 @@ button {
     padding-top: 8px;
     height: 210px;
     width: 40vw;
-    object-fit: cover;
+    object-fit: fill;
   }
 }
 </style>
