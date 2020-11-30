@@ -1,6 +1,7 @@
 import AuthLayout from "../layouts/AuthLayout.vue";
 import Login from "../pages/Login.vue";
-import Device from "pages/Device.vue";
+import Error404 from "pages/Error404.vue";
+import Index from "pages/Index.vue";
 import UserList from "pages/UserList.vue";
 import AddDevice from "pages/AddDevice.vue";
 import AddUser from "pages/AddUser.vue";
@@ -26,7 +27,7 @@ const routes = [
     children: [
       {
         path: "",
-        component: Device,
+        component: Index,
         meta: {
           requiresAuth: true
         }
@@ -56,7 +57,7 @@ const routes = [
   },
   {
     path: "*",
-    redirect: "/"
+    component: Error404
   },
   authPage
 ];

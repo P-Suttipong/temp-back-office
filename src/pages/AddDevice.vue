@@ -51,14 +51,15 @@
               <q-input square filled clearable type="text" placeholder="Max" />
             </div>
           </div>
-          <div>
-            <p class="data-title">Send Line</p>
-            <q-input
-              square
-              filled
-              clearable
-              type="text"
-              placeholder="Send Line"
+          <div class="row justify-between">
+            <p class="data-title q-mt-md">Send Line :</p>
+            <q-toggle
+              class=""
+              size="lg"
+              v-model="fourth"
+              checked-icon="check"
+              color="green"
+              unchecked-icon="clear"
             />
           </div>
 
@@ -112,6 +113,7 @@ export default {
   name: "add-device-page",
   data() {
     return {
+      fourth: false,
       openConfirmModal: false
     };
   },

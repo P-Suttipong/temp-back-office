@@ -238,7 +238,7 @@ export default {
         this.userMenuActive = false;
         this.addDeviceMenuActive = false;
         this.addUserMenuActive = false;
-        this.$router.push("/home");
+        this.$router.push("/");
       }
     },
     userMenuSelected() {

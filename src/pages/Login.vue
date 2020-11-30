@@ -90,6 +90,8 @@ export default {
           password: this.password
         })
       );
+      let passwordEncoder = btoa(this.password);
+      console.log(passwordEncoder);
       this.$router.push("/");
     },
     async logout() {

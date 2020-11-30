@@ -64,10 +64,13 @@
                 <q-btn
                   :color="props.row.userEnabled == true ? 'green' : 'red'"
                   flat
-                  >{{
-                    props.row.userEnabled == true ? "Enable" : "Disable"
-                  }}</q-btn
                 >
+                  <q-icon
+                    :name="props.row.userEnabled == true ? 'done' : 'close'"
+                    class="q-ml-xs"
+                    style="font-size: 19px;"
+                  />
+                </q-btn>
               </div>
             </q-td>
           </template>
@@ -77,6 +80,7 @@
               <div>
                 <q-btn
                   class="description-btn"
+                  icon="settings"
                   @click="openSetting(props.row)"
                   dense
                   flat
@@ -170,6 +174,7 @@
               :color="modal.userEnabled == true ? 'green' : 'red'"
               @click="toggleEnabledChange(modal)"
               class="toggle-btn"
+              :icon-right="modal.userEnabled == true ? 'done' : 'close'"
               >{{ modal.userEnabled == true ? "Enable" : "Disable" }}</q-btn
             >
             <!-- <q-badge class="q-ml-md badge-id">{{ modal.imei }}</q-badge> -->
@@ -273,18 +278,12 @@
           class="row justify-center"
         >
           <q-btn rounded class="q-mr-xs" @click="openConfirm" color="primary"
-            >editing save</q-btn
-          >
-          <q-btn rounded class="q-ml-xs" @click="openConfirm" color="negative"
-            >delete device</q-btn
+            ><q-icon class="q-mr-sm" name="save" size="name" color="white" />editing save</q-btn
           >
         </q-card-section>
         <q-card-section v-else class="column justify-center">
           <q-btn rounded class="q-mb-sm" @click="openConfirm" color="primary"
-            >editing save</q-btn
-          >
-          <q-btn rounded class="" @click="openConfirm" color="negative"
-            >delete device</q-btn
+            ><q-icon class="q-mr-sm" name="save" size="name" color="white" />editing save</q-btn
           >
         </q-card-section>
       </q-card>
@@ -503,7 +502,7 @@ button {
 
 .toggle-btn {
   height: 32px;
-  width: 100px;
+  width: 120px;
 }
 
 .title {
@@ -519,8 +518,10 @@ button {
   width: 25vw;
 }
 .badge-id {
-  padding-left: 10px;
-  padding-right: 10px;
+  padding-left: 15px;
+  padding-right: 15px;
+  padding-top: 15px;
+  padding-bottom: 15px;
   height: 22px;
   font-size: 16px;
 }

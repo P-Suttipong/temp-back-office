@@ -7,8 +7,9 @@ const state = {
       currentTemp: 8,
       maxTemp: 10,
       minTemp: -10,
-      sendLine: "Line",
-      userId: "USER001"
+      sendLine: true,
+      userId: "USER001",
+      isEnable: false
     },
     {
       deviceId: "TEMP00002",
@@ -17,8 +18,9 @@ const state = {
       currentTemp: 1.5,
       maxTemp: 7,
       minTemp: -3,
-      sendLine: "Line",
-      userId: "USER002"
+      sendLine: false,
+      userId: "USER002",
+      isEnable: true
     }
   ],
   userData: [
@@ -40,7 +42,7 @@ const state = {
       phoneNumber: 987654321,
       userEnabled: false,
       lineKey: "XXX",
-      deviceList: ["TEMP00002","TEMP00003"]
+      deviceList: ["TEMP00002", "TEMP00003"]
     }
   ],
   userListId: []
