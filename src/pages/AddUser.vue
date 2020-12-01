@@ -4,13 +4,14 @@
       <q-card class="add-device-form">
         <q-form class="q-gutter-sm q-mt-xs modal-form">
           <div class="row justify-center">
-            <p class="title">Add New User</p>
+            <p class="title title-banner">Add New User</p>
           </div>
           <div class="row justify-between">
             <div class="col-xl-6 col-sm-12">
               <div>
                 <p class="data-title">Username</p>
                 <q-input
+                  v-model="username"
                   square
                   filled
                   clearable
@@ -23,6 +24,7 @@
                 <div class="col-6  q-pr-sm">
                   <p class="data-title">Password</p>
                   <q-input
+                    v-model="password"
                     square
                     filled
                     clearable
@@ -33,6 +35,7 @@
                 <div class="col-6 q-pl-sm">
                   <p class="data-title">Confirm</p>
                   <q-input
+                    v-model="confirmPassword"
                     square
                     filled
                     clearable
@@ -46,6 +49,7 @@
                 <div class="col-6  q-pr-sm">
                   <p class="data-title">Firstname</p>
                   <q-input
+                    v-model="firstname"
                     square
                     filled
                     clearable
@@ -56,6 +60,7 @@
                 <div class="col-6 q-pl-sm">
                   <p class="data-title">Lastname</p>
                   <q-input
+                    v-model="lastname"
                     square
                     filled
                     clearable
@@ -68,6 +73,7 @@
               <div>
                 <p class="data-title">Phone Number</p>
                 <q-input
+                  v-model="phone"
                   square
                   filled
                   clearable
@@ -80,6 +86,7 @@
               <div>
                 <p class="data-title">Line Key</p>
                 <q-input
+                  v-model="lineKey"
                   square
                   filled
                   clearable
@@ -89,40 +96,33 @@
               </div>
             </div>
             <div class="col-xl-5 col-sm-12">
-              <p class="data-title">Device List</p>
-              <q-list>
-                <q-item tag="label" v-ripple>
-                  <q-item-section>
-                    <q-item-label
-                      >ID:TEMP00001 / Name: Device Name 1</q-item-label
-                    >
-                  </q-item-section>
-                  <q-item-section side>
-                    <q-btn flat icon="delete"></q-btn>
-                  </q-item-section>
-                </q-item>
-                <q-item tag="label" v-ripple>
-                  <q-item-section>
-                    <q-item-label
-                      >ID:TEMP00002 / Name: Device Name 2</q-item-label
-                    >
-                  </q-item-section>
-                  <q-item-section side>
-                    <q-btn flat icon="delete"></q-btn>
-                  </q-item-section>
-                </q-item>
-              </q-list>
-              <q-input filled bottom-slots v-model="text" label="Device ID">
-                <template v-slot:append>
-                  <q-icon
-                    v-if="text !== ''"
-                    name="close"
-                    @click="text = ''"
-                    class="cursor-pointer"
-                  />
-                  <q-icon name="add_circle" class="cursor-pointer" />
-                </template>
-              </q-input>
+              <div class="row justify-between">
+                <p class="q-mt-md data-title">Device List</p>
+                <q-btn
+                  icon="add"
+                  class="add-device-btn"
+                  flat
+                  @click="openAddDeviceModal"
+                ></q-btn>
+              </div>
+              <div>
+                <q-table
+                  :data="result"
+                  :columns="deviceListColumn"
+                  no-data-label="No Device Data !"
+                >
+                  <template v-slot:body-cell-delete="props">
+                    <q-td :props="props">
+                      <q-btn
+                        @click="deleteDevice(props.row)"
+                        flat
+                        icon="delete"
+                        color="grey-8"
+                      ></q-btn>
+                    </q-td>
+                  </template>
+                </q-table>
+              </div>
             </div>
           </div>
         </q-form>
@@ -157,6 +157,51 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <q-dialog v-model="openAddDevice" persistent>
+      <q-card class="addDevice-card">
+        <q-card-section>
+          <div class="row">
+            <q-input
+              dense
+              outlined
+              rounded
+              v-model="searchID"
+              label="Device ID"
+            >
+              <template v-slot:prepend>
+                <q-icon name="search" />
+              </template>
+              <template v-slot:append>
+                <q-icon
+                  v-if="searchID !== ''"
+                  name="close"
+                  @click="searchID = ''"
+                  class="cursor-pointer"
+                />
+              </template>
+            </q-input>
+            <q-btn rounded color="primary" class="q-ml-md">search</q-btn>
+          </div>
+        </q-card-section>
+
+        <q-card-section class="text-grey-8 result-text row justify-between">
+          <p><span class="text-bold">ID :</span> {{ "DEVICE001" }}</p>
+          <p><span class="text-bold">NAME :</span> {{ "DEVICE NAME" }}</p>
+        </q-card-section>
+
+        <q-card-actions align="center">
+          <q-btn flat label="Cancel" color="red" v-close-popup />
+          <q-btn
+            @click="confirmAddDevice"
+            flat
+            label="Add"
+            color="green"
+            v-close-popup
+          />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -165,23 +210,87 @@ export default {
   name: "add-user-page",
   data() {
     return {
+      searchID: "",
+      username: "",
+      password: "",
+      confirmPassword: "",
+      firstname: "",
+      lastname: "",
+      phone: "",
+      lineKey: "",
+      deviceID: [],
       text: "",
-      openConfirmModal: false
+      openConfirmModal: false,
+      openAddDevice: false,
+      result: [],
+      deviceListColumn: [
+        {
+          name: "id",
+          label: "ID",
+          align: "center",
+          field: row => row.ID
+        },
+        {
+          name: "name",
+          label: "Name",
+          align: "center",
+          field: row => row.name
+        },
+        {
+          name: "delete",
+          label: "Delete",
+          align: "center",
+          field: row => row
+        }
+      ]
     };
   },
   methods: {
     async openConfirm() {
       this.openConfirmModal = true;
     },
-    confirmAdd() {}
+    async openAddDeviceModal() {
+      this.openAddDevice = true;
+    },
+    confirmAdd() {
+      console.log("confirm");
+      this.$store.dispatch("register", {
+        username: this.username,
+        username: this.username,
+        password: this.password,
+        firstname: this.firstname,
+        lastname: this.lastname,
+        phone: this.phone,
+        lineKey: this.lineKey,
+        deviceID: [{ ID: "DEVICE0001", name: "DEVICE NAME 1" }]
+      });
+    },
+    async deleteDevice(item) {
+      console.log(item);
+      let res = this.result.filter(res => res.ID !== item.ID);
+      this.result = res;
+      console.log(res);
+    },
+
+    confirmAddDevice() {
+      this.openAddDevice = false;
+      this.result.push({
+        ID: `${Math.floor(Math.random() * 100)}`,
+        name: "DEVICE NAME"
+      });
+    }
   }
 };
 </script>
 
 <style scoped>
 .title {
-  padding-bottom: 10px;
+  width: 270px;
   font-size: 28px;
+}
+
+.result-text {
+  font-size: 16px;
 }
 
 .add-device-form {
@@ -192,6 +301,11 @@ export default {
 .modal-form {
   width: 50vw;
 }
+
+.addDevice-card {
+  padding: 10px 50px 10px 50px;
+}
+
 /* Mobile */
 @media only screen and (max-width: 420px) {
   .add-device-form {

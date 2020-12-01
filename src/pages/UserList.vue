@@ -34,7 +34,7 @@
           no-data-label="No data"
         >
           <template v-slot:top-left>
-            <p class="title">Users List</p>
+            <p class="title title-banner">Users List</p>
           </template>
 
           <template v-slot:top-right>
@@ -66,7 +66,11 @@
                   flat
                 >
                   <q-icon
-                    :name="props.row.userEnabled == true ? 'done' : 'close'"
+                    :name="
+                      props.row.userEnabled == true
+                        ? 'radio_button_checked'
+                        : 'radio_button_unchecked'
+                    "
                     class="q-ml-xs"
                     style="font-size: 19px;"
                   />
@@ -170,13 +174,22 @@
 
           <div class="row">
             <p class="q-mt-xs q-mr-md data-title">Status :</p>
-            <q-btn
+            <!-- <q-btn
               :color="modal.userEnabled == true ? 'green' : 'red'"
               @click="toggleEnabledChange(modal)"
               class="toggle-btn"
               :icon-right="modal.userEnabled == true ? 'done' : 'close'"
               >{{ modal.userEnabled == true ? "Enable" : "Disable" }}</q-btn
-            >
+            > -->
+            <q-toggle
+              class=""
+              @input="toggleEnabledChange(modal)"
+              size="lg"
+              v-model="modal.userEnabled"
+              checked-icon="check"
+              color="green"
+              unchecked-icon="clear"
+            />
             <!-- <q-badge class="q-ml-md badge-id">{{ modal.imei }}</q-badge> -->
           </div>
 
@@ -231,44 +244,30 @@
             </div>
 
             <div>
-              <p class="q-mt-md data-title">Device List</p>
-              <q-list>
-                <div v-for="device in modal.deviceList" :key="device">
-                  <q-item tag="label" v-ripple>
-                    <q-item-section>
-                      <q-item-label>{{ device }}</q-item-label>
-                    </q-item-section>
-                    <q-item-section side>
-                      <q-btn
-                        flat
-                        @click="deleteDeivceFromList(device)"
-                        icon="delete"
-                      ></q-btn>
-                    </q-item-section>
-                  </q-item>
-                </div>
-                <!-- <q-item tag="label" v-ripple>
-                  <q-item-section>
-                    <q-item-label
-                      >ID:TEMP00002 / Name: Device Name 2</q-item-label
-                    >
-                  </q-item-section>
-                  <q-item-section side>
-                    <q-btn flat icon="delete"></q-btn>
-                  </q-item-section>
-                </q-item> -->
-              </q-list>
-              <q-input filled bottom-slots v-model="text" label="Device ID">
-                <template v-slot:append>
-                  <q-icon
-                    v-if="text !== ''"
-                    name="close"
-                    @click="text = ''"
-                    class="cursor-pointer"
-                  />
-                  <q-icon name="add_circle" class="cursor-pointer" />
+              <div class="row justify-between">
+                <p class="q-mt-md data-title">Device List</p>
+                <q-btn icon="add" class="add-device-btn" flat></q-btn>
+              </div>
+              <q-table
+                :data="modal.deviceList"
+                :columns="deviceListColumn"
+                :pagination="pagination"
+                :loading="loading"
+                :filter="userId"
+                no-data-label="No data"
+              >
+                <template v-slot:body-cell-handle="props">
+                  <q-td :props="props">
+                    <div>
+                      <q-checkbox
+                        @input="changeHandle(props)"
+                        color="positive"
+                        v-model="props.row.handle"
+                      />
+                    </div>
+                  </q-td>
                 </template>
-              </q-input>
+              </q-table>
             </div>
           </q-form>
         </q-card-section>
@@ -278,12 +277,22 @@
           class="row justify-center"
         >
           <q-btn rounded class="q-mr-xs" @click="openConfirm" color="primary"
-            ><q-icon class="q-mr-sm" name="save" size="name" color="white" />editing save</q-btn
+            ><q-icon
+              class="q-mr-sm"
+              name="save"
+              size="name"
+              color="white"
+            />editing save</q-btn
           >
         </q-card-section>
         <q-card-section v-else class="column justify-center">
           <q-btn rounded class="q-mb-sm" @click="openConfirm" color="primary"
-            ><q-icon class="q-mr-sm" name="save" size="name" color="white" />editing save</q-btn
+            ><q-icon
+              class="q-mr-sm"
+              name="save"
+              size="name"
+              color="white"
+            />editing save</q-btn
           >
         </q-card-section>
       </q-card>
@@ -323,6 +332,7 @@ export default {
     return {
       userId: "",
       isOpenModal: false,
+      val: true,
       text: "",
       openConfirmModal: false,
       toggleChangeId: "",
@@ -345,6 +355,26 @@ export default {
       },
       loading: false,
       isEnabled: true,
+      deviceListColumn: [
+        {
+          name: "id",
+          label: "ID",
+          align: "left",
+          field: row => row.id
+        },
+        {
+          name: "name",
+          label: "Name",
+          align: "center",
+          field: row => row.name
+        },
+        {
+          name: "handle",
+          label: "Handle",
+          align: "center",
+          field: row => row
+        }
+      ],
       columnsMobile: [
         {
           name: "id",
@@ -440,6 +470,9 @@ export default {
     }
   },
   methods: {
+    async changeHandle(props) {
+      console.log(props);
+    },
     async openConfirm() {
       this.openConfirmModal = true;
     },
@@ -458,15 +491,14 @@ export default {
       this.isOpenModal = true;
     },
     async toggleEnabledChange(user) {
-      this.toggleChangeValue = !user.userEnabled;
       this.toggleChangeId = user.id;
-      this.modal.userEnabled = !user.userEnabled;
-      console.log(this.toggleChangeValue);
+      // this.modal.userEnabled = !user.userEnabled;
+      console.log(user);
     },
     async confirmUpdate() {
       this.$store.commit("CHANGE_USER_ENABLED", {
         id: this.toggleChangeId,
-        value: this.toggleChangeValue
+        value: this.modal.userEnabled
       });
       this.isOpenModal = false;
     },
@@ -505,8 +537,12 @@ button {
   width: 120px;
 }
 
+.add-device-btn {
+  color: #757575;
+  font-weight: bold;
+}
+
 .title {
-  padding-top: 20px;
   font-size: 28px;
 }
 .device-table {

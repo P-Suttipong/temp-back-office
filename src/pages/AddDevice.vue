@@ -4,7 +4,7 @@
       <q-card class="add-device-form">
         <q-form class="q-gutter-sm q-mt-xs modal-form">
           <div class="row justify-center">
-            <p class="title">Add New Device</p>
+            <p class="title title-banner">Add New Device</p>
           </div>
           <!-- <div>
             <p class="data-title">Device ID</p>
@@ -128,7 +128,7 @@ export default {
 
 <style scoped>
 .title {
-  padding-bottom: 10px;
+  width: 270px;
   font-size: 28px;
 }
 .add-device-form {

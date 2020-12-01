@@ -23,6 +23,10 @@
     <q-page-container>
       <router-view />
     </q-page-container>
+
+    <q-footer class="column footer items-end q-mr-sm"
+      >Coppyright © 2020 Cold Room Backoffice</q-footer
+    >
   </q-layout>
 </template>
 
@@ -35,6 +39,10 @@ export default {
 </script>
 
 <style scoped>
+.footer {
+  background-color: white;
+  color: #000;
+}
 button {
   font-family: "prompt";
 }

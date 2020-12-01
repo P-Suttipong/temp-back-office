@@ -1,3 +1,9 @@
+import axios from "axios";
+const api = axios.create({
+  baseURL: "http://103.7.57.141:8083/tempurature/web",
+  headers: { crossdomain: true }
+});
+
 const state = {
   deviceData: [
     {
@@ -32,7 +38,7 @@ const state = {
       phoneNumber: 123456789,
       userEnabled: true,
       lineKey: "XXX",
-      deviceList: ["TEMP00001"]
+      deviceList: [{ name: "Device Name", id: "TEMP00001", handle: true }]
     },
     {
       id: "USER002",
@@ -42,7 +48,10 @@ const state = {
       phoneNumber: 987654321,
       userEnabled: false,
       lineKey: "XXX",
-      deviceList: ["TEMP00002", "TEMP00003"]
+      deviceList: [
+        { name: "Device Name 2", id: "TEMP00002", handle: true },
+        { name: "Device Name 3", id: "TEMP00003", handle: true }
+      ]
     }
   ],
   userListId: []
@@ -57,6 +66,23 @@ const actions = {
       commit("SET_USERLIST_ID", user.id);
     });
     await commit("SET_USERLIST_ID", "Show All");
+  },
+  register: async ({ commit, state }, payload) => {
+    console.log(payload);
+    // api
+    //   .post("/register", {
+    //     username: payload.username,
+    //     password: payload.password,
+    //     firstname: payload.firstname,
+    //     lastname: payload.lastname,
+    //     phone: payload.phone,
+    //     lineKey: payload.lineKey,
+    //     deviceID: payload.deviceID
+    //   })
+    //   .then(respone => {
+    //     console.log(respone);
+    //   })
+    //   .catch(error => console.log("Register Error : ", error.message));
   }
 };
 

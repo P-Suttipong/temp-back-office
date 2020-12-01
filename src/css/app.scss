@@ -5,6 +5,18 @@
   src: url("~assets/fonts/prompt/Prompt-Regular.ttf");
 }
 
+.title-banner {
+  margin-top: 10px;
+  background-color: #0288d1;
+  text-align: center;
+  width: 210px;
+  padding: 0px 30px 0px 30px;
+  border-radius: 50px;
+  color: white;
+  animation: pulse;
+  animation-duration: 1s;
+}
+
 .data-title {
   font-family: "prompt";
   font-weight: bolder;
@@ -31,4 +43,3 @@
   animation: pulse;
   animation-duration: 1s;
 }
-

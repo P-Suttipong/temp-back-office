@@ -30,7 +30,7 @@
           no-data-label="No data"
         >
           <template v-slot:top-left>
-            <p class="title">Devices List</p>
+            <p class="title title-banner">Device List</p>
           </template>
 
           <template v-slot:top-right>
@@ -67,8 +67,7 @@
                   @click="toggleEnabledChange(modal)"
                   class="toggle-btn"
                   :icon-right="props.row.sendLine == true ? 'done' : 'close'"
-                  ></q-btn
-                >
+                ></q-btn>
               </div>
             </q-td>
           </template>
@@ -81,9 +80,12 @@
                   :color="props.row.isEnable == true ? 'green' : 'red'"
                   @click="toggleEnabledChange(modal)"
                   class="toggle-btn"
-                  :icon-right="props.row.isEnable == true ? 'radio_button_checked' : 'radio_button_unchecked'"
-                  ></q-btn
-                >
+                  :icon-right="
+                    props.row.isEnable == true
+                      ? 'radio_button_checked'
+                      : 'radio_button_unchecked'
+                  "
+                ></q-btn>
               </div>
             </q-td>
           </template>
@@ -573,7 +575,7 @@ export default {
           label: "Send Line",
           field: "sendLine"
         },
-         {
+        {
           name: "enable",
           align: "center",
           label: "Enable",
@@ -766,10 +768,10 @@ button {
 
 .item-label:hover {
   color: #0288d1;
+  background-color: #2c323f;
 }
 
 .title {
-  padding-top: 20px;
   font-size: 28px;
 }
 
