@@ -2,7 +2,10 @@
   <q-layout view="lHh Lpr lFf">
     <div v-if="this.$q.platform.is.mobile && !this.$q.platform.is.ipad">
       <q-header elevated class="row justify-between mobile-header">
-        <p class="header-title q-mt-lg q-ma-md">Cold Room BO.</p>
+        <div class="row">
+          <q-img width="35px" height="30px" class="q-ml-md q-mt-lg" src="~assets/img/cold.png"></q-img>
+          <p class="header-title q-mt-lg q-pl-md">Cold Room</p>
+        </div>
         <q-btn
           class="menu-btn"
           @click="drawerRight = !drawerRight"
@@ -194,7 +197,7 @@
 
           <q-separator class="separator" />
 
-          <q-item class="logout" @click="logout()" clickable v-ripple>
+          <q-item class="logout" @click="handlerLogout()" clickable v-ripple>
             <q-item-section avatar>
               <q-icon name="cancel" />
             </q-item-section>
@@ -272,9 +275,11 @@ export default {
         this.$router.push("/adduser");
       }
     },
-    async logout() {
-      localStorage.removeItem("user");
-      this.$router.push("/login");
+    async handlerLogout() {
+      let res = await this.$store.dispatch("logout");
+      if (res) {
+        this.$router.push("/login");
+      }
     }
   },
   mounted() {
@@ -322,7 +327,7 @@ p {
   font-family: "prompt";
 }
 .header-title {
-  font-size: 21px;
+  font-size: 22px;
 }
 .drawer-text {
   font-family: "prompt";
@@ -359,8 +364,8 @@ p {
 
 .mobile-header {
   height: 80px;
-  background-color: white;
-  color: black;
+  background-color: #2c323f;
+  color: white;
 }
 
 .logout:hover {

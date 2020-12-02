@@ -5,30 +5,8 @@ const api = axios.create({
 });
 
 const state = {
-  deviceData: [
-    {
-      deviceId: "TEMP00001",
-      imei: "FA:FB:C5:94:AD",
-      deviceName: "Device Name",
-      currentTemp: 8,
-      maxTemp: 10,
-      minTemp: -10,
-      sendLine: true,
-      userId: "USER001",
-      isEnable: false
-    },
-    {
-      deviceId: "TEMP00002",
-      imei: "FA:FB:C5:94:AD",
-      deviceName: "Device Name",
-      currentTemp: 1.5,
-      maxTemp: 7,
-      minTemp: -3,
-      sendLine: false,
-      userId: "USER002",
-      isEnable: true
-    }
-  ],
+  loginAt: parseInt(localStorage.loginAt),
+  deviceList: [],
   userData: [
     {
       id: "USER001",
@@ -60,6 +38,37 @@ const state = {
 const getters = {};
 
 const actions = {
+  login: async ({ commit }, payload) => {
+    console.log(payload);
+    let resData;
+    await api
+      .post("/login", {
+        username: payload.username,
+        password: payload.password
+      })
+      .then(res => {
+        console.log(res.data);
+        resData = res;
+        let timeStamp = Date.parse(res.data.loginAt);
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            username: payload.username
+          })
+        );
+        localStorage.setItem("loginAt", timeStamp);
+      })
+      .catch(error => {
+        console.log("Get Device List Error :", error.message);
+        resData = error;
+      });
+    return resData;
+  },
+  logout: async ({ commit }) => {
+    await localStorage.removeItem("user");
+    await localStorage.removeItem("loginAt");
+    return true;
+  },
   fetchUserListId: async ({ commit, state }) => {
     await commit("CLEAR_USERLIST_ID");
     await state.userData.map(user => {
@@ -83,19 +92,31 @@ const actions = {
     //     console.log(respone);
     //   })
     //   .catch(error => console.log("Register Error : ", error.message));
+  },
+  getDeviceList: async ({ commit }) => {
+    api
+      .get("/deviceList")
+      .then(res => {
+        console.log(res);
+        commit("SET_DEVICE_LIST", res.data);
+      })
+      .catch(error => console.log("Get Device List Error :", error.message));
   }
 };
 
 const mutations = {
+  SET_DEVICE_LIST(state, devices) {
+    state.deviceList = devices;
+  },
   SET_USERLIST_ID(state, payload) {
     state.userListId.push(payload);
-    console.log(state.userListId);
+    // console.log(state.userListId);
   },
   CLEAR_USERLIST_ID(state) {
     state.userListId = [];
   },
   CHANGE_USER_ENABLED(state, payload) {
-    console.log(payload);
+    // console.log(payload);
     state.userData.map(user => {
       if (user.id === payload.id) {
         user.userEnabled = payload.value;

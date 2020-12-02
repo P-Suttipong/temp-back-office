@@ -128,7 +128,7 @@ export default {
 
 <style scoped>
 .title {
-  width: 270px;
+  width: 280px;
   font-size: 28px;
 }
 .add-device-form {

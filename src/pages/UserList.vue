@@ -166,14 +166,14 @@
             <q-badge class="q-ml-md badge-id">{{ modal.id }}</q-badge>
           </div>
 
-          <div class="row">
+          <div class="row q-mt-md">
             <p class="data-title q-mr-sm">Username :</p>
             <p>{{ modal.username }}</p>
             <!-- <q-badge class="q-ml-md badge-id">{{ modal.imei }}</q-badge> -->
           </div>
 
           <div class="row">
-            <p class="q-mt-xs q-mr-md data-title">Status :</p>
+            <p class="q-mt-md q-mr-md data-title">Status :</p>
             <!-- <q-btn
               :color="modal.userEnabled == true ? 'green' : 'red'"
               @click="toggleEnabledChange(modal)"
@@ -198,23 +198,23 @@
               <div class="col-6  q-pr-sm">
                 <p class="data-title">Firstname</p>
                 <q-input
+                  class="input-field"
                   square
                   filled
                   clearable
                   v-model="modal.firstname"
                   type="text"
-                  placeholder="Firstname"
                 />
               </div>
               <div class="col-6 q-pl-sm">
                 <p class="data-title">Lastname</p>
                 <q-input
+                  class="input-field"
                   square
                   filled
                   clearable
                   v-model="modal.lastname"
                   type="text"
-                  placeholder="Lastname"
                 />
               </div>
             </div>
@@ -222,24 +222,24 @@
             <div>
               <p class="data-title">Phone Number</p>
               <q-input
+                class="input-field"
                 square
                 filled
                 clearable
                 mask="###-#######"
                 v-model="modal.phoneNumber"
-                placeholder="Phone Number"
               />
             </div>
 
             <div>
               <p class="data-title">Line Key</p>
               <q-input
+                class="input-field"
                 square
                 filled
                 clearable
                 v-model="modal.lineKey"
                 type="text"
-                placeholder="Line Key"
               />
             </div>
 

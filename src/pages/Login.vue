@@ -28,12 +28,12 @@
                     square
                     filled
                     clearable
-                    v-model="email"
-                    type="email"
-                    label="email"
+                    v-model="username"
+                    type="text"
+                    label="username"
                     class="login"
                     ><template v-slot:prepend>
-                      <q-icon name="email" /> </template
+                      <q-icon name="person" /> </template
                   ></q-input>
                   <q-input
                     square
@@ -67,6 +67,22 @@
           </div>
         </q-card>
       </div>
+      <q-dialog v-model="invalidLogin" persistent>
+        <q-card>
+          <q-card-section class="row items-center">
+            <!-- <q-avatar icon="signal_wifi_off" color="primary" text-color="white" /> -->
+            <span class="q-ml-sm"
+              ><p style="font-size: 18px" class="q-mt-md q-px-xl">
+                Login failed Username or Password wrong
+              </p></span
+            >
+          </q-card-section>
+
+          <q-card-actions align="center">
+            <q-btn flat label="OK" color="red" v-close-popup />
+          </q-card-actions>
+        </q-card>
+      </q-dialog>
     </div>
   </q-page>
 </template>
@@ -76,23 +92,23 @@ export default {
   name: "PageIndex",
   data() {
     return {
-      email: "",
-      password: ""
+      username: "",
+      password: "",
+      invalidLogin: false
     };
   },
   methods: {
     async login() {
-      console.log(this.email, this.password);
-      await localStorage.setItem(
-        "user",
-        JSON.stringify({
-          email: this.email,
-          password: this.password
-        })
-      );
-      let passwordEncoder = btoa(this.password);
-      console.log(passwordEncoder);
-      this.$router.push("/");
+      let res = await this.$store.dispatch("login", {
+        username: this.username,
+        password: this.password
+      });
+      console.log("RES", res);
+      if (res.data) {
+        this.$router.push("/");
+      } else {
+        this.invalidLogin = true;
+      }
     },
     async logout() {
       localStorage.removeItem("user");

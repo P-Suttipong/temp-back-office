@@ -1,5 +1,5 @@
 <template>
-  <q-page>
+  <q-page @click="checkIdle">
     <!-- <div class="row justify-center">
       <p class="title">รายการอุปกรณ์</p>
     </div> -->
@@ -77,11 +77,11 @@
               <div>
                 <q-btn
                   flat
-                  :color="props.row.isEnable == true ? 'green' : 'red'"
+                  :color="props.row.isEnabled == true ? 'green' : 'red'"
                   @click="toggleEnabledChange(modal)"
                   class="toggle-btn"
                   :icon-right="
-                    props.row.isEnable == true
+                    props.row.isEnabled == true
                       ? 'radio_button_checked'
                       : 'radio_button_unchecked'
                   "
@@ -199,25 +199,25 @@
         <q-card-section class="q-pa-lg">
           <div class="row">
             <p class="q-mr-sm data-title">Device ID :</p>
-            <p>{{ modal.deviceId }}</p>
+            <p>{{ modal.deviceID }}</p>
             <!-- <q-badge class="q-ml-md badge-id">{{ modal.deviceId }}</q-badge> -->
           </div>
 
           <div class="row">
-            <p class="q-mr-sm data-title">User ID :</p>
-            <p>{{ modal.userId }}</p>
+            <p class="q-mr-sm data-title">User Name :</p>
+            <p>{{ modal.userName }}</p>
             <!-- <q-badge class="q-ml-md badge-id">{{ modal.imei }}</q-badge> -->
           </div>
 
           <div>
             <p class="data-title">IMEI</p>
             <q-input
+              class="input-field"
               square
               filled
               clearable
               v-model="modal.imei"
               type="text"
-              placeholder="IMEI"
             />
           </div>
 
@@ -225,12 +225,12 @@
             <div>
               <p class="data-title">Device Name</p>
               <q-input
+                class="input-field"
                 square
                 filled
                 clearable
                 v-model="modal.deviceName"
                 type="text"
-                placeholder="Device Name"
               />
             </div>
 
@@ -291,7 +291,7 @@
               <q-toggle
                 class=""
                 size="lg"
-                v-model="enable"
+                v-model="modal.isEnabled"
                 checked-icon="check"
                 color="green"
                 unchecked-icon="clear"
@@ -470,14 +470,15 @@ export default {
       searchUserId: "",
       descriptionModal: false,
       modal: {
-        deviceId: "",
+        deviceID: "",
         imei: "",
         deviceName: "",
         currentTemp: "",
         maxTemp: "",
         minTemp: "",
         sendLine: "",
-        userId: ""
+        userName: "",
+        isEnabled: ""
       },
       pagination: {
         sortBy: "desc",
@@ -492,17 +493,9 @@ export default {
           required: true,
           label: "Device ID",
           align: "center",
-          field: row => row.deviceId,
-          //   format: val => `${val}`,
+          field: row => row.deviceID,
           sortable: true
         },
-        // {
-        //   name: "userID",
-        //   align: "left",
-        //   label: "User ID",
-        //   field: "userId",
-        //   sortable: true
-        // },
         {
           name: "setting",
           align: "center",
@@ -523,7 +516,7 @@ export default {
           required: true,
           label: "Device ID",
           align: "left",
-          field: row => row.deviceId,
+          field: row => row.deviceID,
           //   format: val => `${val}`,
           sortable: true
         },
@@ -538,7 +531,7 @@ export default {
           name: "name",
           align: "center",
           label: "Name",
-          field: "deviceName",
+          field: "name",
           sortable: true
         },
         {
@@ -563,10 +556,10 @@ export default {
           sortable: true
         },
         {
-          name: "userID",
+          name: "userName",
           align: "left",
-          label: "User ID",
-          field: "userId",
+          label: "User Name",
+          field: "userName",
           sortable: true
         },
         {
@@ -579,7 +572,7 @@ export default {
           name: "enable",
           align: "center",
           label: "Enable",
-          field: "isEnable"
+          field: "isEnabled"
         },
         {
           name: "setting",
@@ -598,8 +591,9 @@ export default {
   },
   computed: {
     ...mapState({
-      deviceData: state => state.device.deviceData,
-      userListId: state => state.device.userListId
+      deviceData: state => state.device.deviceList,
+      userListId: state => state.device.userListId,
+      loginAt: state => state.device.loginAt
     }),
     pagesNumber() {
       return Math.ceil(this.rows.length / this.pagination.rowsPerPage);
@@ -645,46 +639,65 @@ export default {
     },
     async openSetting(row) {
       this.modal = await {
-        deviceId: row.deviceId,
-        deviceName: row.deviceName,
+        deviceID: row.deviceID,
+        deviceName: row.name,
         imei: row.imei,
         currentTemp: row.currentTemp,
         maxTemp: row.maxTemp,
         minTemp: row.minTemp,
         sendLine: row.sendLine,
-        userId: row.userId
+        userName: row.userName,
+        isEnabled: row.isEnabled
       };
       this.settingTemp = {
         min: row.minTemp,
         max: row.maxTemp
       };
       this.isOpenModal = true;
-      console.log(this.modal.deviceId);
+      console.log(this.modal.deviceID);
     },
     async openDescription(row) {
       console.log(row);
       this.progress = 0;
       this.descriptionModal = true;
       this.modal = await {
-        deviceId: row.deviceId,
-        deviceName: row.deviceName,
+        deviceID: row.deviceID,
+        deviceName: row.name,
         imei: row.imei,
         currentTemp: row.currentTemp,
         maxTemp: row.maxTemp,
         minTemp: row.minTemp,
         sendLine: row.sendLine,
-        userId: row.userId
+        userName: row.userName,
+        isEnabled: row.isEnabled
       };
       this.interval = setInterval(() => {
         if (this.progress <= this.barValue) {
           this.progress = this.progress + 0.05;
         }
       }, 50);
+    },
+    async checkIdle() {
+      let date = Date.now();
+      console.log("DATE NOW", date);
+      console.log("LOGIN AT", this.loginAt);
+      // if (date - this.loginAt > 1500000) {
+      //   this.$store.dispatch("logout");
+      //   this.$router.push("/login");
+      // }
     }
   },
   async beforeCreate() {
     this.$store.dispatch("fetchUserListId");
     console.log(this.userListId);
+  },
+  mounted() {
+    this.$store.dispatch("getDeviceList");
+    let date = Date.now();
+    // if (date - this.loginAt > 1500000) {
+    //   this.$store.dispatch("logout");
+    //   this.$router.push("/login");
+    // }
   }
 };
 </script>

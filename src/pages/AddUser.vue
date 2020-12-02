@@ -9,7 +9,7 @@
           <div class="row justify-between">
             <div class="col-xl-6 col-sm-12">
               <div>
-                <p class="data-title">Username</p>
+                <p class="data-title">Username*</p>
                 <q-input
                   v-model="username"
                   square
@@ -17,12 +17,13 @@
                   clearable
                   type="text"
                   placeholder="Username"
+                  :rules="[val => !!val || 'Field is required']"
                 />
               </div>
 
               <div class="row justify-between">
                 <div class="col-6  q-pr-sm">
-                  <p class="data-title">Password</p>
+                  <p class="data-title">Password*</p>
                   <q-input
                     v-model="password"
                     square
@@ -30,10 +31,11 @@
                     clearable
                     type="password"
                     placeholder="Password"
+                    :rules="[val => !!val || 'Field is required']"
                   />
                 </div>
                 <div class="col-6 q-pl-sm">
-                  <p class="data-title">Confirm</p>
+                  <p class="data-title">Confirm*</p>
                   <q-input
                     v-model="confirmPassword"
                     square
@@ -41,13 +43,14 @@
                     clearable
                     type="password"
                     placeholder="Confirm Password"
+                    :rules="[val => !!val || 'Field is required']"
                   />
                 </div>
               </div>
 
               <div class="row justify-between">
                 <div class="col-6  q-pr-sm">
-                  <p class="data-title">Firstname</p>
+                  <p class="data-title">Firstname*</p>
                   <q-input
                     v-model="firstname"
                     square
@@ -55,10 +58,11 @@
                     clearable
                     type="text"
                     placeholder="Firstname"
+                    :rules="[val => !!val || 'Field is required']"
                   />
                 </div>
                 <div class="col-6 q-pl-sm">
-                  <p class="data-title">Lastname</p>
+                  <p class="data-title">Lastname*</p>
                   <q-input
                     v-model="lastname"
                     square
@@ -66,12 +70,13 @@
                     clearable
                     type="text"
                     placeholder="Lastname"
+                    :rules="[val => !!val || 'Field is required']"
                   />
                 </div>
               </div>
 
               <div>
-                <p class="data-title">Phone Number</p>
+                <p class="data-title">Phone Number*</p>
                 <q-input
                   v-model="phone"
                   square
@@ -80,6 +85,7 @@
                   type="text"
                   mask="###-###-####"
                   placeholder="Phone Number"
+                  :rules="[val => !!val || 'Field is required']"
                 />
               </div>
 
@@ -158,6 +164,23 @@
       </q-card>
     </q-dialog>
 
+    <q-dialog v-model="errorModal" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <!-- <q-avatar icon="signal_wifi_off" color="primary" text-color="white" /> -->
+          <span class="q-ml-sm"
+            ><p style="font-size: 18px" class="q-mt-md q-px-xl">
+              {{ errorMessage }}
+            </p></span
+          >
+        </q-card-section>
+
+        <q-card-actions align="center">
+          <q-btn flat label="OK" color="red" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
     <q-dialog v-model="openAddDevice" persistent>
       <q-card class="addDevice-card">
         <q-card-section>
@@ -220,8 +243,10 @@ export default {
       lineKey: "",
       deviceID: [],
       text: "",
+      errorMessage: "",
       openConfirmModal: false,
       openAddDevice: false,
+      errorModal: false,
       result: [],
       deviceListColumn: [
         {
@@ -247,7 +272,27 @@ export default {
   },
   methods: {
     async openConfirm() {
-      this.openConfirmModal = true;
+      if (this.username === "" || this.username === null) {
+        this.errorModal = true;
+        this.errorMessage = "Complete Username field !";
+      } else if (this.password === "" || this.password === null) {
+        this.errorModal = true;
+        this.errorMessage = "Complete Password field !";
+      } else if (this.password !== this.confirmPassword) {
+        this.errorModal = true;
+        this.errorMessage = "Password and Confirmpassword don't match";
+      } else if (this.firstname === "" || this.firstname === null) {
+        this.errorModal = true;
+        this.errorMessage = "Complete Firstname field !";
+      } else if (this.lastname === "" || this.lastname === null) {
+        this.errorModal = true;
+        this.errorMessage = "Complete Lastname field !";
+      } else if (this.phone === "" || this.phone === null) {
+        this.errorModal = true;
+        this.errorMessage = "Complete Phone Number field !";
+      } else {
+        this.openConfirmModal = true;
+      }
     },
     async openAddDeviceModal() {
       this.openAddDevice = true;
@@ -262,7 +307,7 @@ export default {
         lastname: this.lastname,
         phone: this.phone,
         lineKey: this.lineKey,
-        deviceID: [{ ID: "DEVICE0001", name: "DEVICE NAME 1" }]
+        deviceID: [{ id: "2", imei: "A8032A699934" }]
       });
     },
     async deleteDevice(item) {

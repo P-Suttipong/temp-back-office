@@ -15,7 +15,7 @@ const router = new VueRouter({
 router.beforeEach((to, from, next) => {
   let requiresAuth = to.matched.some(x => x.meta.requiresAuth);
   let user = localStorage.getItem("user");
-  console.log("user:", user);
+  console.log("localstorage user:", user);
   console.log("requiresAuth:", requiresAuth);
 
   if (requiresAuth && !user) {

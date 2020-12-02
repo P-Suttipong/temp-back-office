@@ -7,14 +7,16 @@
 
 .title-banner {
   margin-top: 10px;
-  background-color: #0288d1;
+  background-color: white;
+  border: 3px solid #0288d1;
   text-align: center;
-  width: 210px;
+  width: 220px;
   padding: 0px 30px 0px 30px;
   border-radius: 50px;
-  color: white;
+  color: #0288d1;
   animation: pulse;
   animation-duration: 1s;
+  font-weight: bold;
 }
 
 .data-title {
@@ -42,4 +44,12 @@
   color: white;
   animation: pulse;
   animation-duration: 1s;
+}
+
+.q-field__bottom {
+  background-color: white;
+}
+
+.input-field {
+  background-color: rgba($color: #0288d1, $alpha: 0.06);
 }
