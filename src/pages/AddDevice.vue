@@ -21,17 +21,17 @@
             <div class="col-6  q-pr-sm">
               <p class="data-title">Device IMEI</p>
               <q-input
-                mask="AA:AA:AA:AA:AA"
+                v-model="imei"
                 square
                 filled
                 clearable
-                type="text"
                 placeholder="Device IMEI"
               />
             </div>
             <div class="col-6 q-pl-sm">
               <p class="data-title">Device Name</p>
               <q-input
+                v-model="name"
                 square
                 filled
                 clearable
@@ -44,22 +44,37 @@
           <div class="row justify-between">
             <div class="col-6  q-pr-sm">
               <p class="data-title">Min Temperature</p>
-              <q-input square filled clearable type="text" placeholder="Min" />
+              <q-input
+                v-model="minTemp"
+                square
+                filled
+                clearable
+                type="text"
+                placeholder="Min"
+              />
             </div>
             <div class="col-6 q-pl-sm">
               <p class="data-title">Max Temperature</p>
-              <q-input square filled clearable type="text" placeholder="Max" />
+              <q-input
+                v-model="maxTemp"
+                square
+                filled
+                clearable
+                type="text"
+                placeholder="Max"
+              />
             </div>
           </div>
           <div class="row justify-between">
             <p class="data-title q-mt-md">Send Line :</p>
             <q-toggle
+              keep-color
               class=""
               size="lg"
-              v-model="fourth"
               checked-icon="check"
-              color="green"
+              color="primary"
               unchecked-icon="clear"
+              v-model="sendLine"
             />
           </div>
 
@@ -71,6 +86,7 @@
               clearable
               type="text"
               placeholder="User ID"
+              v-model="userID"
             />
           </div>
         </q-form>
@@ -114,14 +130,31 @@ export default {
   data() {
     return {
       fourth: false,
-      openConfirmModal: false
+      openConfirmModal: false,
+      imei: "",
+      name: "",
+      maxTemp: "",
+      minTemp: "",
+      sendLine: false,
+      userID: "",
+      isEnabled: true
     };
   },
   methods: {
     async openConfirm() {
       this.openConfirmModal = true;
     },
-    confirmAdd() {}
+    confirmAdd() {
+      this.$store.dispatch("addDevice", {
+        imei: this.imei,
+        name: this.name,
+        maxTemp: this.maxTemp,
+        minTemp: this.minTemp,
+        sendLine: this.sendLine,
+        userID: this.userID,
+        isEnabled: false
+      });
+    }
   }
 };
 </script>

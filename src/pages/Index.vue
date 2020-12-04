@@ -25,7 +25,7 @@
           :data="deviceData"
           :columns="columns"
           :pagination="pagination"
-          :loading="loading"
+          :loading="deviceTableLoading"
           :filter="searchUserId"
           no-data-label="No data"
         >
@@ -41,7 +41,7 @@
                 flat
                 :label="searchUserId === '' ? 'Show All' : searchUserId"
               >
-                <q-list v-for="item in userListId" :key="item.index">
+                <q-list v-for="item in userListId" :key="item">
                   <q-item-section clickable v-close-popup>
                     <q-item-section @click="searcByhUserId(item)">
                       <q-item-label class="item-label cursor-pointer">{{
@@ -64,7 +64,6 @@
                 <q-btn
                   flat
                   :color="props.row.sendLine == true ? 'green' : 'red'"
-                  @click="toggleEnabledChange(modal)"
                   class="toggle-btn"
                   :icon-right="props.row.sendLine == true ? 'done' : 'close'"
                 ></q-btn>
@@ -78,7 +77,6 @@
                 <q-btn
                   flat
                   :color="props.row.isEnabled == true ? 'green' : 'red'"
-                  @click="toggleEnabledChange(modal)"
                   class="toggle-btn"
                   :icon-right="
                     props.row.isEnabled == true
@@ -141,7 +139,7 @@
           <template v-slot:top-right>
             <div class="id-selecter">
               <q-btn-dropdown outline rounded label="Select User ID">
-                <q-list v-for="item in userListId" :key="item.index">
+                <q-list v-for="(item, index) in userListId" :key="index">
                   <q-item-section clickable v-close-popup>
                     <q-item-section @click="searcByhUserId(item)">
                       <q-item-label class="item-label cursor-pointer">{{
@@ -241,7 +239,7 @@
                 color="positive"
                 :min="-20"
                 :max="20"
-                :left-label-color="'info'"
+                :left-label-color="'primary'"
                 :right-label-color="'negative'"
                 :left-label-value="'Min: ' + settingTemp.min + '°C'"
                 :right-label-value="'Max: ' + settingTemp.max + '°C'"
@@ -277,11 +275,12 @@
             <div class="row justify-between">
               <p class="data-title q-mt-md">Send Line :</p>
               <q-toggle
+                keep-color
                 class=""
                 size="lg"
                 v-model="modal.sendLine"
                 checked-icon="check"
-                color="green"
+                color="primary"
                 unchecked-icon="clear"
               />
             </div>
@@ -289,11 +288,12 @@
             <div class="row justify-between">
               <p class="data-title q-mt-md">Device Enable:</p>
               <q-toggle
+                keep-color
                 class=""
                 size="lg"
                 v-model="modal.isEnabled"
                 checked-icon="check"
-                color="green"
+                color="primary"
                 unchecked-icon="clear"
               />
             </div>
@@ -478,7 +478,8 @@ export default {
         minTemp: "",
         sendLine: "",
         userName: "",
-        isEnabled: ""
+        isEnabled: "",
+        userID: ""
       },
       pagination: {
         sortBy: "desc",
@@ -593,13 +594,13 @@ export default {
     ...mapState({
       deviceData: state => state.device.deviceList,
       userListId: state => state.device.userListId,
-      loginAt: state => state.device.loginAt
+      loginAt: state => state.device.loginAt,
+      deviceTableLoading: state => state.device.deviceTableLoading
     }),
     pagesNumber() {
       return Math.ceil(this.rows.length / this.pagination.rowsPerPage);
     },
     barColor() {
-      console.log(this.barValue);
       if (this.barValue > 0.7) {
         return "negative";
       } else if (this.barValue < 0.3) {
@@ -625,6 +626,17 @@ export default {
       this.openConfirmModal = true;
     },
     async confirmUpdate() {
+      this.$store.dispatch("updateDevice", {
+        deviceID: this.modal.deviceID,
+        name: this.modal.deviceName,
+        imei: this.modal.imei,
+        currentTemp: this.modal.currentTemp,
+        maxTemp: this.modal.maxTemp,
+        minTemp: this.modal.minTemp,
+        sendLine: this.modal.sendLine,
+        userID: this.modal.userID,
+        isEnabled: this.modal.isEnabled
+      });
       this.isOpenModal = false;
     },
     async searcByhUserId(id) {
@@ -634,7 +646,6 @@ export default {
       } else {
         this.searchUserId = id;
       }
-      console.log(this.searchUserId);
       this.loading = false;
     },
     async openSetting(row) {
@@ -647,17 +658,16 @@ export default {
         minTemp: row.minTemp,
         sendLine: row.sendLine,
         userName: row.userName,
-        isEnabled: row.isEnabled
+        isEnabled: row.isEnabled,
+        userID: row.userID
       };
       this.settingTemp = {
         min: row.minTemp,
         max: row.maxTemp
       };
       this.isOpenModal = true;
-      console.log(this.modal.deviceID);
     },
     async openDescription(row) {
-      console.log(row);
       this.progress = 0;
       this.descriptionModal = true;
       this.modal = await {
@@ -669,7 +679,8 @@ export default {
         minTemp: row.minTemp,
         sendLine: row.sendLine,
         userName: row.userName,
-        isEnabled: row.isEnabled
+        isEnabled: row.isEnabled,
+        userID: row.userID
       };
       this.interval = setInterval(() => {
         if (this.progress <= this.barValue) {

@@ -5,6 +5,7 @@ import Index from "pages/Index.vue";
 import UserList from "pages/UserList.vue";
 import AddDevice from "pages/AddDevice.vue";
 import AddUser from "pages/AddUser.vue";
+import Test from "pages/Test.vue";
 
 const authPage = {
   path: "",
@@ -49,6 +50,13 @@ const routes = [
       {
         path: "adduser",
         component: AddUser,
+        meta: {
+          requiresAuth: true
+        }
+      },
+      {
+        path: "test",
+        component: Test,
         meta: {
           requiresAuth: true
         }

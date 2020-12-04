@@ -6,40 +6,18 @@ const api = axios.create({
 
 const state = {
   loginAt: parseInt(localStorage.loginAt),
+  deviceTableLoading: false,
   deviceList: [],
-  userData: [
-    {
-      id: "USER001",
-      username: "user001",
-      firstname: "John",
-      lastname: "Yatch",
-      phoneNumber: 123456789,
-      userEnabled: true,
-      lineKey: "XXX",
-      deviceList: [{ name: "Device Name", id: "TEMP00001", handle: true }]
-    },
-    {
-      id: "USER002",
-      username: "user002",
-      firstname: "Marine",
-      lastname: "Hock",
-      phoneNumber: 987654321,
-      userEnabled: false,
-      lineKey: "XXX",
-      deviceList: [
-        { name: "Device Name 2", id: "TEMP00002", handle: true },
-        { name: "Device Name 3", id: "TEMP00003", handle: true }
-      ]
-    }
-  ],
-  userListId: []
+  userData: [],
+  userListId: [],
+  searchResult: "",
+  addDeviceResult: []
 };
 
 const getters = {};
 
 const actions = {
   login: async ({ commit }, payload) => {
-    console.log(payload);
     let resData;
     await api
       .post("/login", {
@@ -47,7 +25,6 @@ const actions = {
         password: payload.password
       })
       .then(res => {
-        console.log(res.data);
         resData = res;
         let timeStamp = Date.parse(res.data.loginAt);
         localStorage.setItem(
@@ -77,34 +54,152 @@ const actions = {
     await commit("SET_USERLIST_ID", "Show All");
   },
   register: async ({ commit, state }, payload) => {
-    console.log(payload);
-    // api
-    //   .post("/register", {
-    //     username: payload.username,
-    //     password: payload.password,
-    //     firstname: payload.firstname,
-    //     lastname: payload.lastname,
-    //     phone: payload.phone,
-    //     lineKey: payload.lineKey,
-    //     deviceID: payload.deviceID
-    //   })
-    //   .then(respone => {
-    //     console.log(respone);
-    //   })
-    //   .catch(error => console.log("Register Error : ", error.message));
+    api
+      .post("/register", {
+        username: payload.username,
+        password: payload.password,
+        firstname: payload.firstname,
+        lastname: payload.lastname,
+        phone: payload.phone,
+        lineKey: payload.lineKey,
+        deviceID: payload.deviceID
+      })
+      .then(respone => {
+        console.log(respone);
+      })
+      .catch(error => console.log("Register Error : ", error.message));
   },
-  getDeviceList: async ({ commit }) => {
+  addDevice: async ({ commit, state }, payload) => {
+    api
+      .post("/addDevice", {
+        imei: payload.imei,
+        name: payload.name,
+        maxTemp: payload.maxTemp,
+        minTemp: payload.minTemp,
+        sendLine: payload.sendLine,
+        userID: payload.userID,
+        isEnabled: payload.isEnabled
+      })
+      .then(res => {
+        console.log(res);
+      })
+      .catch(error => {
+        console.log("ADD DEVICE ERROR :", error);
+      });
+  },
+  updateDevice: async ({ commit, state }, payload) => {
+    console.log(payload);
+    api
+      .put("/updateDevice", {
+        deviceID: payload.deviceID,
+        name: payload.deviceName,
+        imei: payload.imei,
+        currentTemp: payload.currentTemp,
+        maxTemp: payload.maxTemp,
+        minTemp: payload.minTemp,
+        sendLine: payload.sendLine,
+        userID: payload.userID,
+        isEnabled: payload.isEnabled
+      })
+      .then(res => {
+        console.log(res);
+      })
+      .catch(error => {
+        console.log(error);
+      });
+  },
+  getDeviceList: async ({ commit, state }) => {
+    commit("SET_DEVICETABLE_LOAD", true);
     api
       .get("/deviceList")
       .then(res => {
         console.log(res);
         commit("SET_DEVICE_LIST", res.data);
       })
-      .catch(error => console.log("Get Device List Error :", error.message));
+      .catch(error => console.log("Get Device List Error :", error));
+    commit("SET_DEVICETABLE_LOAD", false);
+  },
+  getUserList: async ({ commit, state }) => {
+    api
+      .get("/userList")
+      .then(res => {
+        console.log(res);
+        commit("SET_USER_LIST", res.data);
+      })
+      .catch(error => {
+        console.log("Get User List Error :", error);
+      });
+  },
+  addUserDevice: async ({ commit }, payload) => {
+    await api
+      .put("/addUserDevice", {
+        userID: payload.userID,
+        deviceID: payload.deviceID
+      })
+      .then(res => {
+        console.log("add device", res);
+        if (res.data) {
+          commit("SET_ADD_DEVICE_RESULT", res.data.deviceID);
+          commit("SET_USER_DEVICE", {
+            userID: payload.userID,
+            deviceID: res.data.deviceID
+          });
+        }
+      })
+      .catch(error => {
+        console.log("Add user's Device Error : ", error);
+      });
+  },
+  removeUserDevice: async ({ commit }, payload) => {
+    api
+      .put("/removeUserDevice", {
+        userID: payload.userID,
+        deviceID: payload.deviceID
+      })
+      .then(res => {
+        console.log("remove device", res);
+      })
+      .catch(error => {
+        console.log("Add user's Device Error : ", error);
+      });
+  },
+  searhDeviceByID: async ({ commit }, payload) => {
+    commit("CLEAR_SEARCH_RESULT");
+    api
+      .get(`/searchDeviceByID`, {
+        headers: {
+          deviceID: payload
+        }
+      })
+      .then(res => {
+        console.log(res);
+        if (res.data) {
+          commit("SET_SEARCH_RESULT", res.data);
+        }
+      })
+      .catch(error => {
+        console.log("searchDeviceByID Error : ", error);
+      });
   }
 };
 
 const mutations = {
+  SET_ADD_DEVICE_RESULT(state, payload) {
+    state.addDeviceResult = payload;
+  },
+  SET_USER_LIST(state, payload) {
+    state.userData = payload;
+  },
+  SET_USER_DEVICE(state, payload) {
+    state.userData.map(user => {
+      if (user.userID === payload.userID) {
+        user.deviceID = payload.deviceID;
+      }
+    });
+  },
+  SET_DEVICETABLE_LOAD(state, status) {
+    state.deviceTableLoading = status;
+  },
   SET_DEVICE_LIST(state, devices) {
     state.deviceList = devices;
   },
@@ -123,6 +218,12 @@ const mutations = {
       }
     });
     // state.userData.userEnabled = payload;
+  },
+  SET_SEARCH_RESULT(state, payload) {
+    state.searchResult = payload;
+  },
+  CLEAR_SEARCH_RESULT(state) {
+    state.searchResult = "";
   }
 };
 

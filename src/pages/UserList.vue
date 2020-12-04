@@ -30,7 +30,7 @@
           :columns="columns"
           :pagination="pagination"
           :loading="loading"
-          :filter="userId"
+          :filter="userID"
           no-data-label="No data"
         >
           <template v-slot:top-left>
@@ -39,15 +39,15 @@
 
           <template v-slot:top-right>
             <div class="id-selecter">
-              <q-input dense outlined rounded v-model="userId" label="Serach">
+              <q-input dense outlined rounded v-model="userID" label="Serach">
                 <template v-slot:prepend>
                   <q-icon name="search" />
                 </template>
                 <template v-slot:append>
                   <q-icon
-                    v-if="userId !== ''"
+                    v-if="userID !== ''"
                     name="close"
-                    @click="userId = ''"
+                    @click="userID = ''"
                     class="cursor-pointer"
                   />
                 </template>
@@ -62,12 +62,12 @@
             <q-td :props="props">
               <div>
                 <q-btn
-                  :color="props.row.userEnabled == true ? 'green' : 'red'"
+                  :color="props.row.user_enable == true ? 'green' : 'red'"
                   flat
                 >
                   <q-icon
                     :name="
-                      props.row.userEnabled == true
+                      props.row.user_enable == true
                         ? 'radio_button_checked'
                         : 'radio_button_unchecked'
                     "
@@ -93,6 +93,21 @@
               </div>
             </q-td>
           </template>
+
+          <template v-slot:body-cell-device="props">
+            <q-td :props="props">
+              <div>
+                <q-btn
+                  class="description-btn"
+                  icon="inbox"
+                  @click="openDevicesModal(props.row)"
+                  dense
+                  flat
+                  >Deivces</q-btn
+                >
+              </div>
+            </q-td>
+          </template>
         </q-table>
       </div>
 
@@ -106,7 +121,7 @@
           :data="userData"
           :columns="columnsMobile"
           :pagination="pagination"
-          :filter="userId"
+          :filter="userID"
           :loading="loading"
           no-data-label="No Data"
         >
@@ -116,15 +131,15 @@
 
           <template v-slot:top-right>
             <div class="id-selecter">
-              <q-input dense outlined rounded v-model="userId" label="Serach">
+              <q-input dense outlined rounded v-model="userID" label="Serach">
                 <template v-slot:prepend>
                   <q-icon name="search" />
                 </template>
                 <template v-slot:append>
                   <q-icon
-                    v-if="userId !== ''"
+                    v-if="userID !== ''"
                     name="close"
-                    @click="userId = ''"
+                    @click="userID = ''"
                     class="cursor-pointer"
                   />
                 </template>
@@ -182,12 +197,13 @@
               >{{ modal.userEnabled == true ? "Enable" : "Disable" }}</q-btn
             > -->
             <q-toggle
+              keep-color
               class=""
               @input="toggleEnabledChange(modal)"
               size="lg"
               v-model="modal.userEnabled"
               checked-icon="check"
-              color="green"
+              color="primary"
               unchecked-icon="clear"
             />
             <!-- <q-badge class="q-ml-md badge-id">{{ modal.imei }}</q-badge> -->
@@ -242,33 +258,6 @@
                 type="text"
               />
             </div>
-
-            <div>
-              <div class="row justify-between">
-                <p class="q-mt-md data-title">Device List</p>
-                <q-btn icon="add" class="add-device-btn" flat></q-btn>
-              </div>
-              <q-table
-                :data="modal.deviceList"
-                :columns="deviceListColumn"
-                :pagination="pagination"
-                :loading="loading"
-                :filter="userId"
-                no-data-label="No data"
-              >
-                <template v-slot:body-cell-handle="props">
-                  <q-td :props="props">
-                    <div>
-                      <q-checkbox
-                        @input="changeHandle(props)"
-                        color="positive"
-                        v-model="props.row.handle"
-                      />
-                    </div>
-                  </q-td>
-                </template>
-              </q-table>
-            </div>
           </q-form>
         </q-card-section>
 
@@ -295,6 +284,104 @@
             />editing save</q-btn
           >
         </q-card-section>
+      </q-card>
+    </q-dialog>
+
+    <q-dialog v-model="deviceModal">
+      <q-card class="device-modal">
+        <q-card-section class="row items-center q-pb-none">
+          <div class="q-ml-sm text-h6">User's Devices</div>
+          <q-space />
+          <q-btn icon="close" flat round dense v-close-popup />
+        </q-card-section>
+
+        <q-card-section class="q-pa-lg">
+          <div class="row justify-between">
+            <p class="q-mt-md data-title">Devices List</p>
+            <q-icon
+              @click="openAddDeviceModal"
+              class="add-device-btn"
+              name="add_circle"
+            ></q-icon>
+            <!-- <q-btn
+              icon="add_circle"
+              class="add-device-btn"
+              style="font-size: 16px"
+              flat
+              @click="openAddDeviceModal"
+            ></q-btn> -->
+          </div>
+          <div>
+            <q-table
+              :data="modal.deviceList"
+              :columns="deviceListColumn"
+              no-data-label="No Device Data !"
+            >
+              <template v-slot:body-cell-handler="props">
+                <q-td :props="props">
+                  <!-- <q-btn class="delete-icon" flat icon="delete" color="grey-8"></q-btn> -->
+                  <q-icon
+                    class="delete-icon"
+                    @click="removeDevice(props.row)"
+                    name="delete"
+                  ></q-icon>
+                </q-td>
+              </template>
+            </q-table>
+          </div>
+        </q-card-section>
+      </q-card>
+    </q-dialog>
+
+    <q-dialog v-model="openAddDevice" persistent>
+      <q-card class="addDevice-card">
+        <q-card-section>
+          <div class="row">
+            <q-input
+              dense
+              outlined
+              rounded
+              v-model="searchID"
+              label="Device ID"
+              @input="searhDevice"
+            >
+              <template v-slot:prepend>
+                <q-icon name="search" />
+              </template>
+            </q-input>
+          </div>
+        </q-card-section>
+
+        <q-card-section
+          v-if="searchResult.name"
+          class="text-grey-8 result-text row justify-center"
+        >
+          <p><span class="text-bold">ID :</span> {{ searchResult.deviceID }}</p>
+          <p>
+            <span class="q-ml-xl text-bold">NAME :</span>
+            {{ searchResult.name }}
+          </p>
+        </q-card-section>
+
+        <q-card-section
+          v-else
+          class="text-grey-8 result-text row justify-center"
+        >
+          <p v-if="searchID !== ''">Device's ID not found !</p>
+          <p v-else>Please enter device ID</p>
+        </q-card-section>
+
+        <q-card-actions align="center">
+          <q-btn rounded label="Cancel" color="red" v-close-popup />
+          <q-btn
+            v-if="searchResult.name"
+            label="Add"
+            @click="addDevice"
+            rounded
+            color="green"
+            v-close-popup
+          />
+        </q-card-actions>
       </q-card>
     </q-dialog>
 
@@ -330,13 +417,16 @@ export default {
   name: "userlist-page",
   data() {
     return {
-      userId: "",
+      userID: "",
       isOpenModal: false,
       val: true,
       text: "",
       openConfirmModal: false,
+      deviceModal: false,
+      openAddDevice: false,
       toggleChangeId: "",
       toggleChangeValue: "",
+      searchID: "",
       modal: {
         id: "",
         firstname: "",
@@ -359,7 +449,7 @@ export default {
         {
           name: "id",
           label: "ID",
-          align: "left",
+          align: "center",
           field: row => row.id
         },
         {
@@ -369,8 +459,8 @@ export default {
           field: row => row.name
         },
         {
-          name: "handle",
-          label: "Handle",
+          name: "handler",
+          label: "Handler",
           align: "center",
           field: row => row
         }
@@ -405,7 +495,7 @@ export default {
           required: true,
           label: "ID",
           align: "left",
-          field: row => row.id,
+          field: row => row.userID,
           //   format: val => `${val}`,
           sortable: true
         },
@@ -427,21 +517,21 @@ export default {
           name: "username",
           align: "center",
           label: "Username",
-          field: "username",
+          field: "userName",
           sortable: true
         },
         {
           name: "phoneNumber",
           align: "center",
           label: "Phone Number",
-          field: "phoneNumber",
+          field: "phone",
           sortable: true
         },
         {
           name: "enabled",
           align: "center",
           label: "User Enabled",
-          field: "userEnabled",
+          field: "user_enable",
           sortable: true
         },
         {
@@ -449,6 +539,11 @@ export default {
           align: "center",
           label: "User Setting",
           sortable: true
+        },
+        {
+          name: "device",
+          align: "center",
+          label: "Device"
         }
       ],
       pageUserData: []
@@ -457,7 +552,9 @@ export default {
   computed: {
     ...mapState({
       userData: state => state.device.userData,
-      userListId: state => state.device.userListId
+      userListId: state => state.device.userListId,
+      searchResult: state => state.device.searchResult,
+      addDeviceResult: state => state.device.addDeviceResult
     }),
     userEnabled: {
       get() {
@@ -470,6 +567,45 @@ export default {
     }
   },
   methods: {
+    async openDevicesModal(row) {
+      console.log(row);
+      this.$store.commit("CLEAR_SEARCH_RESULT");
+      this.modal.deviceList = row.deviceID;
+      this.modal.userID = row.userID;
+      this.deviceModal = true;
+    },
+    async openAddDeviceModal() {
+      this.$store.commit("CLEAR_SEARCH_RESULT");
+      this.searchID = "";
+      this.openAddDevice = true;
+    },
+    async addDevice() {
+      let res = await this.modal.deviceList.filter(
+        device => device.id === this.searchID
+      ).length;
+      if (res === 0) {
+        await this.$store.dispatch("addUserDevice", {
+          userID: this.modal.userID,
+          deviceID: this.searchResult.deviceID
+        });
+        console.log("set modal");
+        this.modal.deviceList = await this.addDeviceResult;
+      }
+    },
+    async removeDevice(device) {
+      let deviceList = this.modal.deviceList;
+      let res = deviceList.filter(dvc => dvc.id !== device.id);
+      console.log(res);
+      this.$store.commit("SET_USER_DEVICE", {
+        userID: this.modal.userID,
+        deviceID: res
+      });
+      this.$store.dispatch("removeUserDevice", {
+        userID: this.modal.userID,
+        deviceID: device.id
+      });
+      this.modal.deviceList = res;
+    },
     async changeHandle(props) {
       console.log(props);
     },
@@ -479,12 +615,12 @@ export default {
     async openSetting(row) {
       console.log(row);
       this.modal = await {
-        id: row.id,
+        id: row.userID,
         firstname: row.firstname,
         lastname: row.lastname,
-        username: row.username,
-        phoneNumber: row.phoneNumber,
-        userEnabled: row.userEnabled,
+        username: row.userName,
+        phoneNumber: row.phone,
+        userEnabled: row.user_enable,
         lineKey: row.lineKey,
         deviceList: row.deviceList
       };
@@ -502,20 +638,15 @@ export default {
       });
       this.isOpenModal = false;
     },
-    async deleteDeivceFromList(device) {
-      console.log(device);
-      let list = this.modal.deviceList;
-      await list.map((item, index) => {
-        if (item === device) {
-          list.splice(index);
-        }
-      });
-      this.modal.deviceList = list;
-      console.log(this.modal.deviceList);
+    async searhDevice() {
+      this.$store.dispatch("searhDeviceByID", this.searchID);
     }
   },
   created() {
     this.pageUserData = this.userData;
+  },
+  mounted() {
+    this.$store.dispatch("getUserList");
   }
 };
 </script>
@@ -537,9 +668,33 @@ button {
   width: 120px;
 }
 
+.delete-icon {
+  font-size: 24px;
+  color: grey;
+  cursor: pointer;
+  transition: 0.3s;
+}
+
+.delete-icon:hover {
+  color: #c10015;
+  font-size: 26px;
+}
+
 .add-device-btn {
+  font-size: 30px;
+  /* margin-top: 12px; */
   color: #757575;
   font-weight: bold;
+  cursor: pointer;
+  transition: 0.3s;
+  position: relative;
+  top: 12px;
+}
+
+.add-device-btn:hover {
+  font-size: 35px;
+  color: #0288d1;
+  top: 10px;
 }
 
 .title {
@@ -597,6 +752,14 @@ button {
   border-radius: 50px;
   background-color: #2c323f;
   color: white;
+}
+
+.device-modal {
+  width: 50vw;
+}
+
+.addDevice-card {
+  padding: 10px 50px 10px 50px;
 }
 
 /* Mobile */
