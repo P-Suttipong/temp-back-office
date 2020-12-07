@@ -7,8 +7,37 @@ const api = axios.create({
 const state = {
   loginAt: parseInt(localStorage.loginAt),
   deviceTableLoading: false,
-  deviceList: [],
-  userData: [],
+  deviceList: [
+    {
+      deviceID: "1",
+      imei: "AAAAAAAAAAAAA",
+      name: "DeviceName",
+      currentTemp: "22.14",
+      maxTemp: "10",
+      minTemp: "-10",
+      sendLine: false,
+      userName: "-",
+      isEnabled: true
+    }
+  ],
+  userData: [
+    {
+      firstname: "Firstname",
+      userName: "userName",
+      lastname: "Lastname",
+      userID: "1",
+      phone: "1234567890",
+      createAt: "12-12-20 16:41",
+      lineKey: "-",
+      deviceID: [
+        {
+          id: "1",
+          name: "test"
+        }
+      ],
+      user_enable: true
+    }
+  ],
   userListId: [],
   searchResult: "",
   addDeviceResult: []
@@ -18,40 +47,36 @@ const getters = {};
 
 const actions = {
   login: async ({ commit }, payload) => {
-    let resData;
-    await api
-      .post("/login", {
-        username: payload.username,
-        password: payload.password
-      })
-      .then(res => {
-        resData = res;
-        let timeStamp = Date.parse(res.data.loginAt);
-        localStorage.setItem(
-          "user",
-          JSON.stringify({
-            username: payload.username
-          })
-        );
-        localStorage.setItem("loginAt", timeStamp);
-      })
-      .catch(error => {
-        console.log("Get Device List Error :", error.message);
-        resData = error;
-      });
+    let resData = {
+      data: true
+    };
+    // await api
+    //   .post("/login", {
+    //     username: payload.username,
+    //     password: payload.password
+    //   })
+    //   .then(res => {
+    //     resData = res;
+    //     let timeStamp = Date.parse(res.data.loginAt);
+    //     localStorage.setItem(
+    //       "user",
+    //       JSON.stringify({
+    //         username: payload.username
+    //       })
+    //     );
+    //     localStorage.setItem("loginAt", timeStamp);
+    //   })
+    //   .catch(error => {
+    //     console.log("Get Device List Error :", error.message);
+    //     resData = error;
+    //   });
+    localStorage.setItem("user", "asdsad");
     return resData;
   },
   logout: async ({ commit }) => {
     await localStorage.removeItem("user");
     await localStorage.removeItem("loginAt");
     return true;
-  },
-  fetchUserListId: async ({ commit, state }) => {
-    await commit("CLEAR_USERLIST_ID");
-    await state.userData.map(user => {
-      commit("SET_USERLIST_ID", user.id);
-    });
-    await commit("SET_USERLIST_ID", "Show All");
   },
   register: async ({ commit, state }, payload) => {
     api
@@ -108,27 +133,36 @@ const actions = {
         console.log(error);
       });
   },
+  updateUser: async ({ commit, state }, payload) => {
+    console.log(payload);
+  },
   getDeviceList: async ({ commit, state }) => {
     commit("SET_DEVICETABLE_LOAD", true);
-    api
-      .get("/deviceList")
-      .then(res => {
-        console.log(res);
-        commit("SET_DEVICE_LIST", res.data);
-      })
-      .catch(error => console.log("Get Device List Error :", error));
+    // api
+    //   .get("/deviceList")
+    //   .then(res => {
+    //     console.log(res);
+    //     commit("SET_DEVICE_LIST", res.data);
+    //     res.data.map(device => {
+    //       if (device.userName !== "-") {
+    //         commit("SET_USERLIST_ID", device.userName);
+    //       }
+    //     });
+    //     commit("SET_USERLIST_ID", "Show All");
+    //   })
+    //   .catch(error => console.log("Get Device List Error :", error));
     commit("SET_DEVICETABLE_LOAD", false);
   },
   getUserList: async ({ commit, state }) => {
-    api
-      .get("/userList")
-      .then(res => {
-        console.log(res);
-        commit("SET_USER_LIST", res.data);
-      })
-      .catch(error => {
-        console.log("Get User List Error :", error);
-      });
+    // api
+    //   .get("/userList")
+    //   .then(res => {
+    //     console.log(res);
+    //     commit("SET_USER_LIST", res.data);
+    //   })
+    //   .catch(error => {
+    //     console.log("Get User List Error :", error);
+    //   });
   },
   addUserDevice: async ({ commit }, payload) => {
     await api

@@ -21,15 +21,16 @@
         >
           <q-scroll-area class="fit drawer-right">
             <q-list class="q-ml-sm q-mt-sm menu-list">
-              <q-item v-ripple>
+              <!-- <q-item v-ripple>
                 <q-item-section avatar
                   ><q-img width="30px" src="~assets/img/cold.png"></q-img>
                 </q-item-section>
                 <q-item-section class="drawer-title">
                   Backoffice
                 </q-item-section></q-item
-              >
+              > -->
               <q-item
+                class="q-mt-md"
                 :active="deviceMenuActive"
                 active-class="is-active"
                 @click="deviceMenuSelected()"
@@ -311,11 +312,13 @@ export default {
 <style scoped>
 .drawer-header {
   color: white;
-  background-color: #2c323f;
+  /* background-color: #2c323f; */
+  background: url("~assets/img/left_banner.jpg");
 }
 .drawer-right {
   color: white;
-  background-color: #2c323f;
+  /* background-color: #2c323f; */
+  background: url("~assets/img/left_banner.jpg");
 }
 
 .footer {
@@ -364,7 +367,7 @@ p {
 
 .mobile-header {
   height: 80px;
-  background-color: #2c323f;
+  background: url("~assets/img/left_banner.jpg");
   color: white;
 }
 

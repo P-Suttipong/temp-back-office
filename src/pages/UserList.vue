@@ -126,7 +126,7 @@
           no-data-label="No Data"
         >
           <template v-slot:top-left>
-            <p class="title">Users List</p>
+            <p class="title title-banner">Users List</p>
           </template>
 
           <template v-slot:top-right>
@@ -265,7 +265,19 @@
           v-if="this.$q.platform.is.desktop || this.$q.platform.is.ipad"
           class="row justify-center"
         >
-          <q-btn rounded class="q-mr-xs" @click="openConfirm" color="primary"
+          <q-btn
+            rounded
+            class="q-mr-xs"
+            @click="openResetPassword"
+            color="positive"
+            ><q-icon
+              class="q-mr-sm"
+              name="replay"
+              size="name"
+              color="white"
+            />Reset Password</q-btn
+          >
+          <q-btn rounded class="q-ml-xs" @click="openConfirm" color="primary"
             ><q-icon
               class="q-mr-sm"
               name="save"
@@ -275,7 +287,19 @@
           >
         </q-card-section>
         <q-card-section v-else class="column justify-center">
-          <q-btn rounded class="q-mb-sm" @click="openConfirm" color="primary"
+          <q-btn
+            rounded
+            class="q-mr-xs"
+            @click="openResetPassword"
+            color="positive"
+            ><q-icon
+              class="q-mr-sm"
+              name="replay"
+              size="name"
+              color="white"
+            />Reset Password</q-btn
+          >
+          <q-btn rounded class="q-mt-sm" @click="openConfirm" color="primary"
             ><q-icon
               class="q-mr-sm"
               name="save"
@@ -385,6 +409,44 @@
       </q-card>
     </q-dialog>
 
+    <q-dialog v-model="openResetModal" persistent>
+      <q-card class="addDevice-card">
+        <q-card-section>
+          <div class="row">
+            <q-input
+              dense
+              outlined
+              rounded
+              v-model="newPassword"
+              label="New Password"
+            >
+              <template v-slot:prepend>
+                <q-icon name="fiber_new" />
+              </template>
+            </q-input>
+          </div>
+          <div class="q-mt-sm row">
+            <q-input
+              dense
+              outlined
+              rounded
+              v-model="confirmNewPassword"
+              label="New Password"
+            >
+              <template v-slot:prepend>
+                <q-icon name="security" />
+              </template>
+            </q-input>
+          </div>
+        </q-card-section>
+
+        <q-card-actions align="center">
+          <q-btn rounded label="Cancel" color="red" v-close-popup />
+          <q-btn label="Reset" rounded color="green" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
     <q-dialog v-model="openConfirmModal" persistent>
       <q-card>
         <q-card-section class="row items-center">
@@ -427,6 +489,9 @@ export default {
       toggleChangeId: "",
       toggleChangeValue: "",
       searchID: "",
+      openResetModal: false,
+      newPassword: "",
+      confirmNewPassword: "",
       modal: {
         id: "",
         firstname: "",
@@ -471,7 +536,7 @@ export default {
           required: true,
           label: "ID",
           align: "left",
-          field: row => row.id,
+          field: row => row.userID,
           //   format: val => `${val}`,
           sortable: true
         },
@@ -479,7 +544,7 @@ export default {
           name: "username",
           align: "center",
           label: "Username",
-          field: "username",
+          field: "userName",
           sortable: true
         },
         {
@@ -567,6 +632,9 @@ export default {
     }
   },
   methods: {
+    async openResetPassword() {
+      this.openResetModal = true;
+    },
     async openDevicesModal(row) {
       console.log(row);
       this.$store.commit("CLEAR_SEARCH_RESULT");
@@ -632,9 +700,14 @@ export default {
       console.log(user);
     },
     async confirmUpdate() {
-      this.$store.commit("CHANGE_USER_ENABLED", {
-        id: this.toggleChangeId,
-        value: this.modal.userEnabled
+      console.log("Update");
+      this.$store.dispatch("updateUser", {
+        userID: this.modal.id,
+        username: this.modal.username,
+        firstname: this.modal.firstname,
+        lastname: this.modal.lastname,
+        phone: this.modal.phoneNumber,
+        lineKey: this.modal.lineKey
       });
       this.isOpenModal = false;
     },

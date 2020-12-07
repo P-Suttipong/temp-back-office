@@ -12,9 +12,23 @@
   text-align: center;
   width: 220px;
   padding: 0px 30px 0px 30px;
-  border-radius: 50px;
+  border-radius: 10px;
   color: #0288d1;
   font-weight: bold;
+}
+
+@media only screen and (max-width: 420px) {
+  .title-banner {
+    margin-top: 0px;
+    background-color: white;
+    border: 3px solid #0288d1;
+    text-align: center;
+    width: 170px;
+    padding: 0px 15px 0px 15px;
+    border-radius: 10px;
+    color: #0288d1;
+    font-weight: bold;
+  }
 }
 
 .data-title {

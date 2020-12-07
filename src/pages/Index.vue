@@ -133,7 +133,7 @@
           no-data-label="No data"
         >
           <template v-slot:top-left>
-            <p class="title">Devices List</p>
+            <p class="title title-banner">Devices List</p>
           </template>
 
           <template v-slot:top-right>
@@ -324,54 +324,23 @@
 
     <q-dialog v-model="descriptionModal">
       <q-card class="description-modal">
-        <q-card-section class="row items-center q-pb-none">
-          <div class="text-h5">Description</div>
+        <q-card-section class="row flex q-mb-lg q-pb-none">
+          <div class="text-h5">Temperature</div>
           <q-space />
           <q-btn icon="close" flat round dense v-close-popup />
         </q-card-section>
 
         <q-card-section>
           <div class="row justify-center">
-            <p style="font-size: 16px">Current Temperature</p>
-          </div>
-          <div class="row justify-between">
-            <p
-              v-if="this.$q.platform.is.desktop || this.$q.platform.is.ipad"
-              class="q-mr-md description-text min q-mt-sm"
-            >
-              Min : {{ modal.minTemp }}°C
-            </p>
-            <p v-else class="description-text min q-mt-sm">
-              {{ modal.minTemp }}°C
-            </p>
-            <div class="temp-bar">
-              <q-linear-progress
-                stripe
-                rounded
-                size="30px"
-                :value="progress"
-                :color="barColor"
-                class="q-mt-sm"
-                track-color="grey-6"
-              >
-                <div class="absolute-full flex flex-center">
-                  <q-badge
-                    color="white"
-                    text-color="black"
-                    style="font-size: 15px; font-weight: 600"
-                    :label="`${modal.currentTemp}°C`"
-                  /></div
-              ></q-linear-progress>
+            <q-img class="thermo" src="~assets/img/thermometer.png" />
+            <div class="q-mt-sm q-ml-xl column items-center">
+              <p class="max">MAX : {{ modal.maxTemp }} °C</p>
+              <p class=" current-banner">
+                <span class="current">{{ modal.currentTemp }}</span>
+                <span class="degree-unit">°C</span>
+              </p>
+              <p class="min">MIN : {{ modal.minTemp }} °C</p>
             </div>
-            <p
-              v-if="this.$q.platform.is.desktop || this.$q.platform.is.ipad"
-              class="q-ml-md description-text max q-mt-sm"
-            >
-              Max : {{ modal.maxTemp }}°C
-            </p>
-            <p v-else class="description-text max q-mt-sm">
-              {{ modal.maxTemp }}°C
-            </p>
           </div>
         </q-card-section>
       </q-card>
@@ -498,6 +467,12 @@ export default {
           sortable: true
         },
         {
+          name: "username",
+          label: "User Name",
+          align: "center",
+          field: row => row.userName
+        },
+        {
           name: "setting",
           align: "center",
           label: "Settings",
@@ -558,7 +533,7 @@ export default {
         },
         {
           name: "userName",
-          align: "left",
+          align: "center",
           label: "User Name",
           field: "userName",
           sortable: true
@@ -698,10 +673,6 @@ export default {
       // }
     }
   },
-  async beforeCreate() {
-    this.$store.dispatch("fetchUserListId");
-    console.log(this.userListId);
-  },
   mounted() {
     this.$store.dispatch("getDeviceList");
     let date = Date.now();
@@ -725,6 +696,13 @@ button {
   font-family: "prompt";
 }
 
+.thermo {
+  width: 100px;
+  height: 200px;
+  position: relative;
+  animation: pulse 1.5s;
+}
+
 .description-text {
   color: white;
   padding: 4px 10px 4px 10px;
@@ -734,12 +712,33 @@ button {
   font-size: 15px;
 }
 
+.degree-unit {
+  margin-left: 8px;
+  font-size: 20px;
+}
+
+.current {
+  font-size: 48px;
+  font-weight: bold;
+}
+
+.current-banner {
+  padding: 0px 15px 0px 15px;
+  border-radius: 10px;
+  color: white;
+  background-color: #2c323f;
+}
+
 .min {
-  background-color: #31ccec;
+  font-size: 24px;
+  font-weight: bold;
+  color: #31ccec;
 }
 
 .max {
-  background-color: #c10015;
+  font-size: 24px;
+  font-weight: bold;
+  color: #c10015;
 }
 
 .description-btn {
@@ -821,8 +820,8 @@ button {
 
 .description-modal {
   max-width: 700px;
-  width: 50vw;
-  min-width: 500px;
+  width: 25vw;
+  min-width: 450px;
   padding: 10px 30px 20px 30px;
 }
 
@@ -864,6 +863,34 @@ button {
   .modal-card {
     min-width: 90vw;
   }
+  .thermo {
+    margin-top: 20px;
+    width: 60px;
+    height: 120px;
+  }
+  .current {
+    font-size: 30px;
+    font-weight: bold;
+  }
+
+  .current-banner {
+    padding: 0px 15px 0px 15px;
+    border-radius: 10px;
+    color: white;
+    background-color: #2c323f;
+  }
+
+  .min {
+    font-size: 20px;
+    font-weight: bold;
+    color: #31ccec;
+  }
+
+  .max {
+    font-size: 20px;
+    font-weight: bold;
+    color: #c10015;
+  }
 }
 
 /* Tablet Ipad */
@@ -882,6 +909,17 @@ button {
   }
   .modal-card {
     width: 500px;
+  }
+  .description-modal {
+    max-width: 700px;
+    width: 50vw;
+    min-width: 300px;
+    padding: 10px 3px 20px 3px;
+  }
+  .thermo {
+    margin-top: 20px;
+    width: 80px;
+    height: 160px;
   }
 }
 </style>
