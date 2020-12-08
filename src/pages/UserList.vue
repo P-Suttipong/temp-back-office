@@ -199,7 +199,6 @@
             <q-toggle
               keep-color
               class=""
-              @input="toggleEnabledChange(modal)"
               size="lg"
               v-model="modal.userEnabled"
               checked-icon="check"
@@ -380,17 +379,33 @@
           v-if="searchResult.name"
           class="text-grey-8 result-text row justify-center"
         >
-          <p><span class="text-bold">ID :</span> {{ searchResult.deviceID }}</p>
-          <p>
-            <span class="q-ml-xl text-bold">NAME :</span>
-            {{ searchResult.name }}
-          </p>
+          <div
+            class="column items-center justify-center"
+            v-if="searchResult.userName !== '-'"
+          >
+            <p class="col">
+              <span class="text-bold">ID :</span> {{ searchResult.deviceID }}
+            </p>
+            <p class="col">
+              Device has already
+            </p>
+          </div>
+          <div class="column items-center justify-center" v-else>
+            <p class="col">
+              <span class="text-bold">ID :</span> {{ searchResult.deviceID }}
+            </p>
+            <p class="col">
+              <span class="text-bold">NAME :</span>
+              {{ searchResult.name }}
+            </p>
+          </div>
         </q-card-section>
 
         <q-card-section
-          v-else
-          class="text-grey-8 result-text row justify-center"
+          v-if="!searchResult.name"
+          class="text-grey-8 result-text column items-center justify-center"
         >
+          <p>Message :</p>
           <p v-if="searchID !== ''">Device's ID not found !</p>
           <p v-else>Please enter device ID</p>
         </q-card-section>
@@ -398,7 +413,7 @@
         <q-card-actions align="center">
           <q-btn rounded label="Cancel" color="red" v-close-popup />
           <q-btn
-            v-if="searchResult.name"
+            v-if="searchResult.name && searchResult.userName === '-'"
             label="Add"
             @click="addDevice"
             rounded
@@ -412,37 +427,65 @@
     <q-dialog v-model="openResetModal" persistent>
       <q-card class="addDevice-card">
         <q-card-section>
-          <div class="row">
-            <q-input
-              dense
-              outlined
-              rounded
-              v-model="newPassword"
-              label="New Password"
-            >
-              <template v-slot:prepend>
-                <q-icon name="fiber_new" />
-              </template>
-            </q-input>
-          </div>
-          <div class="q-mt-sm row">
-            <q-input
-              dense
-              outlined
-              rounded
-              v-model="confirmNewPassword"
-              label="New Password"
-            >
-              <template v-slot:prepend>
-                <q-icon name="security" />
-              </template>
-            </q-input>
+          <div class="column">
+            <div class="row">
+              <q-input
+                type="password"
+                dense
+                outlined
+                rounded
+                :rules="[
+                  val => val.length >= 6 || 'Please use minimum 6 characters'
+                ]"
+                v-model="newPassword"
+                label="New Password"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="fiber_new" />
+                </template>
+              </q-input>
+            </div>
+            <div class="q-mt-sm row">
+              <q-input
+                type="password"
+                dense
+                outlined
+                rounded
+                :rules="[val => val.length >= 6 || 'Field is required']"
+                v-model="confirmNewPassword"
+                label="New Password"
+                @input="checkPassword"
+              >
+                <template v-slot:prepend>
+                  <q-icon name="security" />
+                </template>
+              </q-input>
+            </div>
+            <div class="q-mt-sm row justify-center">
+              <p class="error-msg-reset">{{ errResetPassword }}</p>
+            </div>
           </div>
         </q-card-section>
 
         <q-card-actions align="center">
-          <q-btn rounded label="Cancel" color="red" v-close-popup />
-          <q-btn label="Reset" rounded color="green" v-close-popup />
+          <q-btn
+            @click="
+              (errResetPassword = ''),
+                (newPassword = ''),
+                (confirmNewPassword = '')
+            "
+            rounded
+            label="Cancel"
+            color="red"
+            v-close-popup
+          />
+          <q-btn
+            v-if="canReset"
+            @click="resetPassword"
+            label="Reset"
+            rounded
+            color="green"
+          />
         </q-card-actions>
       </q-card>
     </q-dialog>
@@ -479,6 +522,7 @@ export default {
   name: "userlist-page",
   data() {
     return {
+      errResetPassword: "\xa0",
       userID: "",
       isOpenModal: false,
       val: true,
@@ -492,6 +536,7 @@ export default {
       openResetModal: false,
       newPassword: "",
       confirmNewPassword: "",
+      canReset: false,
       modal: {
         id: "",
         firstname: "",
@@ -506,7 +551,7 @@ export default {
         sortBy: "desc",
         descending: false,
         page: 1,
-        rowsPerPage: 5
+        rowsPerPage: 10
       },
       loading: false,
       isEnabled: true,
@@ -635,6 +680,21 @@ export default {
     async openResetPassword() {
       this.openResetModal = true;
     },
+    checkPassword() {
+      if (this.newPassword !== this.confirmNewPassword) {
+        this.errResetPassword = "Password not match !";
+      } else {
+        this.errResetPassword = "\xa0";
+        this.canReset = true;
+      }
+    },
+    async resetPassword() {
+      console.log("RESET");
+      this.$store.dispatch("resetPassword", {
+        userID: this.modal.id,
+        newPassword: this.newPassword
+      })
+    },
     async openDevicesModal(row) {
       console.log(row);
       this.$store.commit("CLEAR_SEARCH_RESULT");
@@ -694,11 +754,6 @@ export default {
       };
       this.isOpenModal = true;
     },
-    async toggleEnabledChange(user) {
-      this.toggleChangeId = user.id;
-      // this.modal.userEnabled = !user.userEnabled;
-      console.log(user);
-    },
     async confirmUpdate() {
       console.log("Update");
       this.$store.dispatch("updateUser", {
@@ -707,12 +762,18 @@ export default {
         firstname: this.modal.firstname,
         lastname: this.modal.lastname,
         phone: this.modal.phoneNumber,
-        lineKey: this.modal.lineKey
+        lineKey: this.modal.lineKey,
+        user_enable: this.modal.userEnabled
       });
       this.isOpenModal = false;
     },
     async searhDevice() {
-      this.$store.dispatch("searhDeviceByID", this.searchID);
+      console.log(this.searchID.length);
+      if (this.searchID.length !== 0) {
+        this.$store.dispatch("searhDeviceByID", this.searchID);
+      } else {
+        this.$store.dispatch("searhDeviceByID", 0);
+      }
     }
   },
   created() {
@@ -734,6 +795,12 @@ p {
 
 button {
   font-family: "prompt";
+}
+
+.error-msg-reset {
+  font-size: 14px;
+  font-weight: 100;
+  color: red;
 }
 
 .toggle-btn {

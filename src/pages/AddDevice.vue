@@ -121,6 +121,26 @@
         </q-card-actions>
       </q-card>
     </q-dialog>
+
+    <q-dialog v-model="errorModal" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <!-- <q-avatar icon="signal_wifi_off" color="primary" text-color="white" /> -->
+          <span class="q-ml-sm"
+            ><p
+              style="font-size: 18px;"
+              class="q-mt-md q-px-xl"
+            >
+              Device's IMEI has already add.
+            </p></span
+          >
+        </q-card-section>
+
+        <q-card-actions align="center">
+          <q-btn flat label="Ok" color="red" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 
@@ -137,23 +157,35 @@ export default {
       minTemp: "",
       sendLine: false,
       userID: "",
-      isEnabled: true
+      isEnabled: true,
+      errorModal: false
     };
   },
   methods: {
     async openConfirm() {
       this.openConfirmModal = true;
     },
-    confirmAdd() {
-      this.$store.dispatch("addDevice", {
+    async confirmAdd() {
+      let res = await this.$store.dispatch("addDevice", {
         imei: this.imei,
         name: this.name,
         maxTemp: this.maxTemp,
         minTemp: this.minTemp,
         sendLine: this.sendLine,
         userID: this.userID,
-        isEnabled: false
+        isEnabled: true
       });
+      if (res.status !== false) {
+        this.imei = "";
+        this.name = "";
+        this.maxTemp = "";
+        this.minTemp = "";
+        this.sendLine = false;
+        this.userID = "";
+        this.isEnabled = true;
+      } else {
+        this.errorModal = true;
+      }
     }
   }
 };

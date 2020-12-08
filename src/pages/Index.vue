@@ -229,6 +229,10 @@
                 clearable
                 v-model="modal.deviceName"
                 type="text"
+                :rules="[
+                  val => !!val || 'Field is required',
+                  val => val.length <= 16 || 'Please use maximum 16 characters'
+                ]"
               />
             </div>
 
@@ -454,7 +458,7 @@ export default {
         sortBy: "desc",
         descending: false,
         page: 1,
-        rowsPerPage: 5
+        rowsPerPage: 10
       },
       loading: false,
       columnsMobile: [
@@ -606,12 +610,13 @@ export default {
         name: this.modal.deviceName,
         imei: this.modal.imei,
         currentTemp: this.modal.currentTemp,
-        maxTemp: this.modal.maxTemp,
-        minTemp: this.modal.minTemp,
+        maxTemp: this.settingTemp.max,
+        minTemp: this.settingTemp.min,
         sendLine: this.modal.sendLine,
         userID: this.modal.userID,
         isEnabled: this.modal.isEnabled
       });
+      // this.$store.dispatch("getDeviceList");
       this.isOpenModal = false;
     },
     async searcByhUserId(id) {

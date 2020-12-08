@@ -105,15 +105,15 @@
               <div class="row justify-between">
                 <p class="q-mt-md data-title">Device List</p>
                 <q-btn
-                  icon="add"
-                  class="add-device-btn"
+                  icon="add_circle"
+                  class="add-device-btn text-grey-8"
                   flat
                   @click="openAddDeviceModal"
                 ></q-btn>
               </div>
               <div>
                 <q-table
-                  :data="result"
+                  :data="deviceID"
                   :columns="deviceListColumn"
                   no-data-label="No Device Data !"
                 >
@@ -146,7 +146,7 @@
           <!-- <q-avatar icon="signal_wifi_off" color="primary" text-color="white" /> -->
           <span class="q-ml-sm"
             ><p style="font-size: 18px" class="q-mt-md q-px-xl">
-              Comfirm Add User ?
+              Comfirm register user ?
             </p></span
           >
         </q-card-section>
@@ -191,34 +191,41 @@
               rounded
               v-model="searchID"
               label="Device ID"
+              @input="searhDevice"
             >
               <template v-slot:prepend>
                 <q-icon name="search" />
               </template>
-              <template v-slot:append>
-                <q-icon
-                  v-if="searchID !== ''"
-                  name="close"
-                  @click="searchID = ''"
-                  class="cursor-pointer"
-                />
-              </template>
             </q-input>
-            <q-btn rounded color="primary" class="q-ml-md">search</q-btn>
           </div>
         </q-card-section>
 
-        <q-card-section class="text-grey-8 result-text row justify-between">
-          <p><span class="text-bold">ID :</span> {{ "DEVICE001" }}</p>
-          <p><span class="text-bold">NAME :</span> {{ "DEVICE NAME" }}</p>
+        <q-card-section
+          v-if="searchResult.name"
+          class="text-grey-8 result-text row justify-center"
+        >
+          <p><span class="text-bold">ID :</span> {{ searchResult.deviceID }}</p>
+          <p>
+            <span class="q-ml-xl text-bold">NAME :</span>
+            {{ searchResult.name }}
+          </p>
+        </q-card-section>
+
+        <q-card-section
+          v-else
+          class="text-grey-8 result-text row justify-center"
+        >
+          <p v-if="searchID !== ''">Device's ID not found !</p>
+          <p v-else>Please enter device ID</p>
         </q-card-section>
 
         <q-card-actions align="center">
-          <q-btn flat label="Cancel" color="red" v-close-popup />
+          <q-btn rounded label="Cancel" color="red" v-close-popup />
           <q-btn
-            @click="confirmAddDevice"
-            flat
+            v-if="searchResult.name"
             label="Add"
+            @click="addToDeviceList"
+            rounded
             color="green"
             v-close-popup
           />
@@ -229,6 +236,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
   name: "add-user-page",
   data() {
@@ -248,18 +256,19 @@ export default {
       openAddDevice: false,
       errorModal: false,
       result: [],
+      searchDevice: "",
       deviceListColumn: [
         {
           name: "id",
           label: "ID",
           align: "center",
-          field: row => row.ID
+          field: row => row.id
         },
         {
           name: "name",
           label: "Name",
           align: "center",
-          field: row => row.name
+          field: row => row.imei
         },
         {
           name: "delete",
@@ -270,7 +279,19 @@ export default {
       ]
     };
   },
+  computed: {
+    ...mapState({
+      searchResult: state => state.device.searchResult
+    })
+  },
   methods: {
+    async addToDeviceList() {
+      this.deviceID.push({
+        id: this.searchResult.deviceID,
+        imei: this.searchResult.imei
+      });
+      console.log(this.deviceID);
+    },
     async openConfirm() {
       if (this.username === "" || this.username === null) {
         this.errorModal = true;
@@ -296,33 +317,42 @@ export default {
     },
     async openAddDeviceModal() {
       this.openAddDevice = true;
+      this.searchID = "";
+      this.$store.commit("CLEAR_SEARCH_RESULT");
     },
-    confirmAdd() {
+    async confirmAdd() {
       console.log("confirm");
-      this.$store.dispatch("register", {
-        username: this.username,
+      let res = await this.$store.dispatch("register", {
         username: this.username,
         password: this.password,
         firstname: this.firstname,
         lastname: this.lastname,
         phone: this.phone,
         lineKey: this.lineKey,
-        deviceID: [{ id: "2", imei: "A8032A699934" }]
+        deviceID: this.deviceID
       });
+      console.log("REGISTER", res);
+      if (res.username === "Check username") {
+        this.errorModal = true;
+        this.errorMessage = "Username has already register";
+      } else {
+        this.username = "";
+        this.password = "";
+        this.firstname = "";
+        this.lastname = "";
+        this.phone = "";
+        this.lineKey = "";
+        this.deviceID = [];
+      }
     },
     async deleteDevice(item) {
       console.log(item);
-      let res = this.result.filter(res => res.ID !== item.ID);
-      this.result = res;
+      let res = this.deviceID.filter(res => res.id !== item.id);
+      this.deviceID = res;
       console.log(res);
     },
-
-    confirmAddDevice() {
-      this.openAddDevice = false;
-      this.result.push({
-        ID: `${Math.floor(Math.random() * 100)}`,
-        name: "DEVICE NAME"
-      });
+    async searhDevice() {
+      this.$store.dispatch("searhDeviceByID", this.searchID);
     }
   }
 };

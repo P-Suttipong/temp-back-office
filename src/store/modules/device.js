@@ -7,37 +7,8 @@ const api = axios.create({
 const state = {
   loginAt: parseInt(localStorage.loginAt),
   deviceTableLoading: false,
-  deviceList: [
-    {
-      deviceID: "1",
-      imei: "AAAAAAAAAAAAA",
-      name: "DeviceName",
-      currentTemp: "22.14",
-      maxTemp: "10",
-      minTemp: "-10",
-      sendLine: false,
-      userName: "-",
-      isEnabled: true
-    }
-  ],
-  userData: [
-    {
-      firstname: "Firstname",
-      userName: "userName",
-      lastname: "Lastname",
-      userID: "1",
-      phone: "1234567890",
-      createAt: "12-12-20 16:41",
-      lineKey: "-",
-      deviceID: [
-        {
-          id: "1",
-          name: "test"
-        }
-      ],
-      user_enable: true
-    }
-  ],
+  deviceList: [],
+  userData: [],
   userListId: [],
   searchResult: "",
   addDeviceResult: []
@@ -50,26 +21,26 @@ const actions = {
     let resData = {
       data: true
     };
-    // await api
-    //   .post("/login", {
-    //     username: payload.username,
-    //     password: payload.password
-    //   })
-    //   .then(res => {
-    //     resData = res;
-    //     let timeStamp = Date.parse(res.data.loginAt);
-    //     localStorage.setItem(
-    //       "user",
-    //       JSON.stringify({
-    //         username: payload.username
-    //       })
-    //     );
-    //     localStorage.setItem("loginAt", timeStamp);
-    //   })
-    //   .catch(error => {
-    //     console.log("Get Device List Error :", error.message);
-    //     resData = error;
-    //   });
+    await api
+      .post("/login", {
+        username: payload.username,
+        password: payload.password
+      })
+      .then(res => {
+        resData = res;
+        let timeStamp = Date.parse(res.data.loginAt);
+        localStorage.setItem(
+          "user",
+          JSON.stringify({
+            username: payload.username
+          })
+        );
+        localStorage.setItem("loginAt", timeStamp);
+      })
+      .catch(error => {
+        console.log("Get Device List Error :", error.message);
+        resData = error;
+      });
     localStorage.setItem("user", "asdsad");
     return resData;
   },
@@ -79,7 +50,8 @@ const actions = {
     return true;
   },
   register: async ({ commit, state }, payload) => {
-    api
+    let res;
+    await api
       .post("/register", {
         username: payload.username,
         password: payload.password,
@@ -90,12 +62,15 @@ const actions = {
         deviceID: payload.deviceID
       })
       .then(respone => {
+        res = respone.data;
         console.log(respone);
       })
       .catch(error => console.log("Register Error : ", error.message));
+    return res;
   },
   addDevice: async ({ commit, state }, payload) => {
-    api
+    let response;
+    await api
       .post("/addDevice", {
         imei: payload.imei,
         name: payload.name,
@@ -107,17 +82,19 @@ const actions = {
       })
       .then(res => {
         console.log(res);
+        response = res.data;
       })
       .catch(error => {
         console.log("ADD DEVICE ERROR :", error);
       });
+    return response;
   },
   updateDevice: async ({ commit, state }, payload) => {
     console.log(payload);
     api
       .put("/updateDevice", {
         deviceID: payload.deviceID,
-        name: payload.deviceName,
+        name: payload.name,
         imei: payload.imei,
         currentTemp: payload.currentTemp,
         maxTemp: payload.maxTemp,
@@ -128,6 +105,7 @@ const actions = {
       })
       .then(res => {
         console.log(res);
+        commit("SET_UPDATE_DEVICE", payload);
       })
       .catch(error => {
         console.log(error);
@@ -135,34 +113,57 @@ const actions = {
   },
   updateUser: async ({ commit, state }, payload) => {
     console.log(payload);
+    api
+      .put("/updateUser", {
+        userID: payload.userID,
+        username: payload.username,
+        firstname: payload.firstname,
+        lastname: payload.lastname,
+        phone: payload.phone,
+        lineKey: payload.lineKey,
+        user_enable: payload.user_enable
+      })
+      .then(res => {
+        console.log("Update User : ", res);
+        commit("SET_UPDATE_USER", res.data);
+      })
+      .catch(error => console.log("Update User Error : ", error));
   },
   getDeviceList: async ({ commit, state }) => {
     commit("SET_DEVICETABLE_LOAD", true);
-    // api
-    //   .get("/deviceList")
-    //   .then(res => {
-    //     console.log(res);
-    //     commit("SET_DEVICE_LIST", res.data);
-    //     res.data.map(device => {
-    //       if (device.userName !== "-") {
-    //         commit("SET_USERLIST_ID", device.userName);
-    //       }
-    //     });
-    //     commit("SET_USERLIST_ID", "Show All");
-    //   })
-    //   .catch(error => console.log("Get Device List Error :", error));
+    api
+      .get("/deviceList")
+      .then(res => {
+        console.log(res);
+        commit("SET_DEVICE_LIST", res.data);
+        res.data.map(device => {
+          if (
+            device.userName !== "-" &&
+            (state.userListId.filter(name => name === device.userName).length >=
+            1
+              ? false
+              : true)
+          ) {
+            commit("SET_USERLIST_ID", device.userName);
+          }
+        });
+        if (state.userListId.filter(name => name === "Show All").length < 1) {
+          commit("SET_USERLIST_ID", "Show All");
+        }
+      })
+      .catch(error => console.log("Get Device List Error :", error));
     commit("SET_DEVICETABLE_LOAD", false);
   },
   getUserList: async ({ commit, state }) => {
-    // api
-    //   .get("/userList")
-    //   .then(res => {
-    //     console.log(res);
-    //     commit("SET_USER_LIST", res.data);
-    //   })
-    //   .catch(error => {
-    //     console.log("Get User List Error :", error);
-    //   });
+    api
+      .get("/userList")
+      .then(res => {
+        console.log(res);
+        commit("SET_USER_LIST", res.data);
+      })
+      .catch(error => {
+        console.log("Get User List Error :", error);
+      });
   },
   addUserDevice: async ({ commit }, payload) => {
     await api
@@ -207,17 +208,55 @@ const actions = {
       })
       .then(res => {
         console.log(res);
-        if (res.data) {
+        if (res.data.isEnabled === true) {
           commit("SET_SEARCH_RESULT", res.data);
         }
       })
       .catch(error => {
         console.log("searchDeviceByID Error : ", error);
       });
+  },
+  resetPassword: async ({ commit }, payload) => {
+    api
+      .put("/resetPassword", {
+        userID: payload.userID,
+        newPassword: payload.newPassword
+      })
+      .then(res => {
+        console.log(res);
+      })
+      .catch(error => console.log(error));
   }
 };
 
 const mutations = {
+  SET_UPDATE_DEVICE(state, payload) {
+    console.log("update");
+    state.deviceList.map(device => {
+      if (device.deviceID === payload.deviceID) {
+        device.deviceID = payload.deviceID;
+        device.name = payload.name;
+        device.imei = payload.imei;
+        device.currentTemp = payload.currentTemp;
+        device.maxTemp = payload.maxTemp;
+        device.minTemp = payload.minTemp;
+        device.sendLine = payload.sendLine;
+        device.userID = payload.userID;
+        device.isEnabled = payload.isEnabled;
+      }
+    });
+  },
+  SET_UPDATE_USER(state, payload) {
+    console.log("update");
+    state.userData.map(user => {
+      if (user.userID === payload.userID) {
+        user.firstname = payload.firstname;
+        user.lastname = payload.lastname;
+        user.phone = payload.phone;
+        user.user_enable = payload.user_enable;
+      }
+    });
+  },
   SET_ADD_DEVICE_RESULT(state, payload) {
     state.addDeviceResult = payload;
   },
