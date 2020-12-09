@@ -1,9 +1,14 @@
 <template>
-  <q-layout view="lHh Lpr lFf">
+  <q-layout @click="checkIdle" view="lHh Lpr lFf">
     <div v-if="this.$q.platform.is.mobile && !this.$q.platform.is.ipad">
       <q-header elevated class="row justify-between mobile-header">
         <div class="row">
-          <q-img width="35px" height="30px" class="q-ml-md q-mt-lg" src="~assets/img/cold.png"></q-img>
+          <q-img
+            width="35px"
+            height="30px"
+            class="q-ml-md q-mt-lg"
+            src="~assets/img/cold.png"
+          ></q-img>
           <p class="header-title q-mt-lg q-pl-md">Cold Room</p>
         </div>
         <q-btn
@@ -96,7 +101,7 @@
 
               <q-separator />
 
-              <q-item @click="logout()" clickable v-ripple>
+              <q-item @click="handlerLogout()" clickable v-ripple>
                 <q-item-section avatar>
                   <q-icon name="cancel" />
                 </q-item-section>
@@ -222,6 +227,7 @@
 </template>
 
 <script>
+import { mapState } from "vuex";
 export default {
   name: "MainLayout",
   components: {},
@@ -238,6 +244,11 @@ export default {
       deviceBtn: "is-active",
       userBtn: "non-active"
     };
+  },
+  computed: {
+    ...mapState({
+      loginAt: state => state.device.loginAt
+    })
   },
   methods: {
     deviceMenuSelected() {
@@ -279,6 +290,15 @@ export default {
     async handlerLogout() {
       let res = await this.$store.dispatch("logout");
       if (res) {
+        this.$router.push("/login");
+      }
+    },
+    async checkIdle() {
+      let date = Date.now();
+      // console.log("DATE NOW", date);
+      // console.log("LOGIN AT", this.loginAt);
+      if (date - this.loginAt > 1500000) {
+        this.$store.dispatch("logout");
         this.$router.push("/login");
       }
     }

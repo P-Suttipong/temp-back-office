@@ -1,5 +1,5 @@
 <template>
-  <q-page @click="checkIdle">
+  <q-page>
     <!-- <div class="row justify-center">
       <p class="title">รายการอุปกรณ์</p>
     </div> -->
@@ -241,8 +241,8 @@
               <q-range
                 v-model="settingTemp"
                 color="positive"
-                :min="-20"
-                :max="20"
+                :min="-40"
+                :max="40"
                 :left-label-color="'primary'"
                 :right-label-color="'negative'"
                 :left-label-value="'Min: ' + settingTemp.min + '°C'"
@@ -667,24 +667,10 @@ export default {
           this.progress = this.progress + 0.05;
         }
       }, 50);
-    },
-    async checkIdle() {
-      let date = Date.now();
-      console.log("DATE NOW", date);
-      console.log("LOGIN AT", this.loginAt);
-      // if (date - this.loginAt > 1500000) {
-      //   this.$store.dispatch("logout");
-      //   this.$router.push("/login");
-      // }
     }
   },
   mounted() {
     this.$store.dispatch("getDeviceList");
-    let date = Date.now();
-    // if (date - this.loginAt > 1500000) {
-    //   this.$store.dispatch("logout");
-    //   this.$router.push("/login");
-    // }
   }
 };
 </script>

@@ -204,17 +204,33 @@
           v-if="searchResult.name"
           class="text-grey-8 result-text row justify-center"
         >
-          <p><span class="text-bold">ID :</span> {{ searchResult.deviceID }}</p>
-          <p>
-            <span class="q-ml-xl text-bold">NAME :</span>
-            {{ searchResult.name }}
-          </p>
+          <div
+            class="column items-center justify-center"
+            v-if="searchResult.userName !== '-'"
+          >
+            <p class="col">
+              <span class="text-bold">ID :</span> {{ searchResult.deviceID }}
+            </p>
+            <p class="col">
+              Device has already
+            </p>
+          </div>
+          <div class="column items-center justify-center" v-else>
+            <p class="col">
+              <span class="text-bold">ID :</span> {{ searchResult.deviceID }}
+            </p>
+            <p class="col">
+              <span class="text-bold">NAME :</span>
+              {{ searchResult.name }}
+            </p>
+          </div>
         </q-card-section>
 
         <q-card-section
-          v-else
-          class="text-grey-8 result-text row justify-center"
+          v-if="!searchResult.name"
+          class="text-grey-8 result-text column items-center justify-center"
         >
+          <p>Message :</p>
           <p v-if="searchID !== ''">Device's ID not found !</p>
           <p v-else>Please enter device ID</p>
         </q-card-section>
@@ -222,7 +238,7 @@
         <q-card-actions align="center">
           <q-btn rounded label="Cancel" color="red" v-close-popup />
           <q-btn
-            v-if="searchResult.name"
+            v-if="searchResult.name && searchResult.userName === '-'"
             label="Add"
             @click="addToDeviceList"
             rounded
@@ -352,7 +368,11 @@ export default {
       console.log(res);
     },
     async searhDevice() {
-      this.$store.dispatch("searhDeviceByID", this.searchID);
+      if (this.searchID.length !== 0) {
+        this.$store.dispatch("searhDeviceByID", this.searchID);
+      } else {
+        this.$store.dispatch("searhDeviceByID", 0);
+      }
     }
   }
 };

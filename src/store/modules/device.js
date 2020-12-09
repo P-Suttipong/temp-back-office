@@ -1,7 +1,9 @@
 import axios from "axios";
 const api = axios.create({
-  baseURL: "http://103.7.57.141:8083/tempurature/web",
-  headers: { crossdomain: true }
+  // baseURL: "http://103.7.57.141:8083/tempurature/web",
+  baseURL: "https://cold-room-backoffice.andamantracking.dev/temperature/web",
+  headers: { crossdomain: true, "Access-Control-Allow-Origin": "*" },
+  mode: "no-cors"
 });
 
 const state = {
@@ -41,12 +43,11 @@ const actions = {
         console.log("Get Device List Error :", error.message);
         resData = error;
       });
-    localStorage.setItem("user", "asdsad");
     return resData;
   },
   logout: async ({ commit }) => {
-    await localStorage.removeItem("user");
-    await localStorage.removeItem("loginAt");
+    localStorage.removeItem("user");
+    localStorage.removeItem("loginAt");
     return true;
   },
   register: async ({ commit, state }, payload) => {
@@ -225,7 +226,7 @@ const actions = {
       .then(res => {
         console.log(res);
       })
-      .catch(error => console.log(error));
+      .catch(error => console.log(error => console.log(error)));
   }
 };
 

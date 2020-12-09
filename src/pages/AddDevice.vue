@@ -127,11 +127,25 @@
         <q-card-section class="row items-center">
           <!-- <q-avatar icon="signal_wifi_off" color="primary" text-color="white" /> -->
           <span class="q-ml-sm"
-            ><p
-              style="font-size: 18px;"
-              class="q-mt-md q-px-xl"
-            >
+            ><p style="font-size: 18px;" class="q-mt-md q-px-xl">
               Device's IMEI has already add.
+            </p></span
+          >
+        </q-card-section>
+
+        <q-card-actions align="center">
+          <q-btn flat label="Ok" color="red" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
+    <q-dialog v-model="invalidModal" persistent>
+      <q-card>
+        <q-card-section class="row items-center">
+          <!-- <q-avatar icon="signal_wifi_off" color="primary" text-color="white" /> -->
+          <span class="q-ml-sm"
+            ><p style="font-size: 18px;" class="q-mt-md q-px-xl">
+              {{ errorMessage }}
             </p></span
           >
         </q-card-section>
@@ -158,12 +172,28 @@ export default {
       sendLine: false,
       userID: "",
       isEnabled: true,
-      errorModal: false
+      errorModal: false,
+      errorMessage: false,
+      invalidModal: false
     };
   },
   methods: {
     async openConfirm() {
-      this.openConfirmModal = true;
+      if (this.imei === "" || this.imei === null) {
+        this.invalidModal = true;
+        this.errorMessage = "Complete Device IMEI field !";
+      } else if (this.name === "" || this.name === null) {
+        this.invalidModal = true;
+        this.errorMessage = "Complete Device name field !";
+      } else if (this.minTemp === "" || this.minTemp === null) {
+        this.invalidModal = true;
+        this.errorMessage = "Complete Min Temperature field !";
+      } else if (this.maxTemp === "" || this.maxTemp === null) {
+        this.invalidModal = true;
+        this.errorMessage = "Complete Max Temperature field !";
+      } else {
+        this.openConfirmModal = true;
+      }
     },
     async confirmAdd() {
       let res = await this.$store.dispatch("addDevice", {
@@ -183,6 +213,8 @@ export default {
         this.sendLine = false;
         this.userID = "";
         this.isEnabled = true;
+        this.invalidModal = true;
+        this.errorMessage = "Add Device Complete";
       } else {
         this.errorModal = true;
       }
