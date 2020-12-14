@@ -306,7 +306,7 @@ export default {
         id: this.searchResult.deviceID,
         imei: this.searchResult.imei
       });
-      console.log(this.deviceID);
+      // console.log(this.deviceID);
     },
     async openConfirm() {
       if (this.username === "" || this.username === null) {
@@ -337,7 +337,7 @@ export default {
       this.$store.commit("CLEAR_SEARCH_RESULT");
     },
     async confirmAdd() {
-      console.log("confirm");
+      // console.log("confirm");
       let res = await this.$store.dispatch("register", {
         username: this.username,
         password: this.password,
@@ -347,7 +347,7 @@ export default {
         lineKey: this.lineKey,
         deviceID: this.deviceID
       });
-      console.log("REGISTER", res);
+      // console.log("REGISTER", res);
       if (res.username === "Check username") {
         this.errorModal = true;
         this.errorMessage = "Username has already register";
@@ -362,10 +362,10 @@ export default {
       }
     },
     async deleteDevice(item) {
-      console.log(item);
+      // console.log(item);
       let res = this.deviceID.filter(res => res.id !== item.id);
       this.deviceID = res;
-      console.log(res);
+      // console.log(res);
     },
     async searhDevice() {
       if (this.searchID.length !== 0) {

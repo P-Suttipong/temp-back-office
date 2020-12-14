@@ -40,8 +40,8 @@ export default {
 
 <style scoped>
 .footer {
-  background-color: white;
-  color: #000;
+  background-color: #030c1a;
+  color: #767d88;
 }
 button {
   font-family: "prompt";

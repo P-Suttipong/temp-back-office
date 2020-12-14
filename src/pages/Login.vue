@@ -103,7 +103,7 @@ export default {
         username: this.username,
         password: this.password
       });
-      console.log("RES", res);
+      // console.log("RES", res);
       if (res.data) {
         this.$router.push("/");
       } else {
@@ -120,7 +120,8 @@ export default {
 <style scoped>
 .page {
   /* background-color: #2c323f; */
-  background: linear-gradient(180deg, #13151b 10%, #2c323f 55%, #fff 20%);
+  /* background: linear-gradient(180deg, #13151b 10%, #2c323f 55%, #fff 20%); */
+  background: url("~assets/img/bg.jpg");
 }
 
 p {

@@ -294,12 +294,14 @@ export default {
       }
     },
     async checkIdle() {
-      let date = Date.now();
-      // console.log("DATE NOW", date);
-      // console.log("LOGIN AT", this.loginAt);
-      if (date - this.loginAt > 1500000) {
-        this.$store.dispatch("logout");
-        this.$router.push("/login");
+      let date = await Date.now();
+      let loginAt = await parseInt(localStorage.loginAt)
+      console.log("DATE NOW", date);
+      console.log("LOGIN AT", loginAt);
+      if (date - loginAt > 1500000) {
+        // await this.$store.dispatch("logout");
+        // await this.$router.push("/login");
+        // location.reload();
       }
     }
   },

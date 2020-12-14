@@ -7,7 +7,6 @@ const api = axios.create({
 });
 
 const state = {
-  loginAt: parseInt(localStorage.loginAt),
   deviceTableLoading: false,
   deviceList: [],
   userData: [],
@@ -38,6 +37,7 @@ const actions = {
           })
         );
         localStorage.setItem("loginAt", timeStamp);
+        console.log(res);
       })
       .catch(error => {
         console.log("Get Device List Error :", error.message);
@@ -64,7 +64,7 @@ const actions = {
       })
       .then(respone => {
         res = respone.data;
-        console.log(respone);
+        // console.log(respone);
       })
       .catch(error => console.log("Register Error : ", error.message));
     return res;
@@ -82,7 +82,7 @@ const actions = {
         isEnabled: payload.isEnabled
       })
       .then(res => {
-        console.log(res);
+        // console.log(res);
         response = res.data;
       })
       .catch(error => {
@@ -91,7 +91,7 @@ const actions = {
     return response;
   },
   updateDevice: async ({ commit, state }, payload) => {
-    console.log(payload);
+    // console.log(payload);
     api
       .put("/updateDevice", {
         deviceID: payload.deviceID,
@@ -105,7 +105,7 @@ const actions = {
         isEnabled: payload.isEnabled
       })
       .then(res => {
-        console.log(res);
+        // console.log(res);
         commit("SET_UPDATE_DEVICE", payload);
       })
       .catch(error => {
@@ -113,7 +113,7 @@ const actions = {
       });
   },
   updateUser: async ({ commit, state }, payload) => {
-    console.log(payload);
+    // console.log(payload);
     api
       .put("/updateUser", {
         userID: payload.userID,
@@ -125,7 +125,7 @@ const actions = {
         user_enable: payload.user_enable
       })
       .then(res => {
-        console.log("Update User : ", res);
+        // console.log("Update User : ", res);
         commit("SET_UPDATE_USER", res.data);
       })
       .catch(error => console.log("Update User Error : ", error));
@@ -135,7 +135,7 @@ const actions = {
     api
       .get("/deviceList")
       .then(res => {
-        console.log(res);
+        // console.log(res);
         commit("SET_DEVICE_LIST", res.data);
         res.data.map(device => {
           if (
@@ -159,7 +159,7 @@ const actions = {
     api
       .get("/userList")
       .then(res => {
-        console.log(res);
+        // console.log(res);
         commit("SET_USER_LIST", res.data);
       })
       .catch(error => {
@@ -173,7 +173,7 @@ const actions = {
         deviceID: payload.deviceID
       })
       .then(res => {
-        console.log("add device", res);
+        // console.log("add device", res);
         if (res.data) {
           commit("SET_ADD_DEVICE_RESULT", res.data.deviceID);
           commit("SET_USER_DEVICE", {
@@ -193,7 +193,7 @@ const actions = {
         deviceID: payload.deviceID
       })
       .then(res => {
-        console.log("remove device", res);
+        // console.log("remove device", res);
       })
       .catch(error => {
         console.log("Add user's Device Error : ", error);
@@ -208,7 +208,7 @@ const actions = {
         }
       })
       .then(res => {
-        console.log(res);
+        // console.log(res);
         if (res.data.isEnabled === true) {
           commit("SET_SEARCH_RESULT", res.data);
         }
@@ -224,7 +224,7 @@ const actions = {
         newPassword: payload.newPassword
       })
       .then(res => {
-        console.log(res);
+        // console.log(res);
       })
       .catch(error => console.log(error => console.log(error)));
   }
@@ -232,7 +232,7 @@ const actions = {
 
 const mutations = {
   SET_UPDATE_DEVICE(state, payload) {
-    console.log("update");
+    // console.log("update");
     state.deviceList.map(device => {
       if (device.deviceID === payload.deviceID) {
         device.deviceID = payload.deviceID;
@@ -248,7 +248,7 @@ const mutations = {
     });
   },
   SET_UPDATE_USER(state, payload) {
-    console.log("update");
+    // console.log("update");
     state.userData.map(user => {
       if (user.userID === payload.userID) {
         user.firstname = payload.firstname;

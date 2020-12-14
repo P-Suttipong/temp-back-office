@@ -668,7 +668,7 @@ export default {
     }),
     userEnabled: {
       get() {
-        console.log("this.userData.userEnabled", this.userData.userEnabled);
+        // console.log("this.userData.userEnabled", this.userData.userEnabled);
         return this.userData.userEnabled;
       },
       set(value) {
@@ -689,14 +689,14 @@ export default {
       }
     },
     async resetPassword() {
-      console.log("RESET");
+      // console.log("RESET");
       this.$store.dispatch("resetPassword", {
         userID: this.modal.id,
         newPassword: this.newPassword
       })
     },
     async openDevicesModal(row) {
-      console.log(row);
+      // console.log(row);
       this.$store.commit("CLEAR_SEARCH_RESULT");
       this.modal.deviceList = row.deviceID;
       this.modal.userID = row.userID;
@@ -716,14 +716,14 @@ export default {
           userID: this.modal.userID,
           deviceID: this.searchResult.deviceID
         });
-        console.log("set modal");
+        // console.log("set modal");
         this.modal.deviceList = await this.addDeviceResult;
       }
     },
     async removeDevice(device) {
       let deviceList = this.modal.deviceList;
       let res = deviceList.filter(dvc => dvc.id !== device.id);
-      console.log(res);
+      // console.log(res);
       this.$store.commit("SET_USER_DEVICE", {
         userID: this.modal.userID,
         deviceID: res
@@ -735,13 +735,13 @@ export default {
       this.modal.deviceList = res;
     },
     async changeHandle(props) {
-      console.log(props);
+      // console.log(props);
     },
     async openConfirm() {
       this.openConfirmModal = true;
     },
     async openSetting(row) {
-      console.log(row);
+      // console.log(row);
       this.modal = await {
         id: row.userID,
         firstname: row.firstname,
@@ -755,7 +755,7 @@ export default {
       this.isOpenModal = true;
     },
     async confirmUpdate() {
-      console.log("Update");
+      // console.log("Update");
       this.$store.dispatch("updateUser", {
         userID: this.modal.id,
         username: this.modal.username,
@@ -768,7 +768,7 @@ export default {
       this.isOpenModal = false;
     },
     async searhDevice() {
-      console.log(this.searchID.length);
+      // console.log(this.searchID.length);
       if (this.searchID.length !== 0) {
         this.$store.dispatch("searhDeviceByID", this.searchID);
       } else {
