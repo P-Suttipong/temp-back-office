@@ -295,7 +295,7 @@ export default {
     },
     async checkIdle() {
       let date = await Date.now();
-      let loginAt = await parseInt(localStorage.loginAt)
+      let loginAt = await parseInt(localStorage.loginAt);
       console.log("DATE NOW", date);
       console.log("LOGIN AT", loginAt);
       if (date - loginAt > 1500000) {
@@ -306,6 +306,7 @@ export default {
     }
   },
   mounted() {
+    this.checkIdle();
     if (this.$route.path === "/") {
       this.deviceMenuActive = true;
       this.userMenuActive = false;

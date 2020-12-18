@@ -64,7 +64,7 @@ const actions = {
       })
       .then(respone => {
         res = respone.data;
-        // console.log(respone);
+        console.log(respone);
       })
       .catch(error => console.log("Register Error : ", error.message));
     return res;

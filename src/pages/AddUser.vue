@@ -348,12 +348,27 @@ export default {
         deviceID: this.deviceID
       });
       // console.log("REGISTER", res);
-      if (res.username === "Check username") {
+      if (
+        res.username === "Duplicate username" ||
+        res.username === "Check Username"
+      ) {
         this.errorModal = true;
         this.errorMessage = "Username has already register";
+        this.username = "";
+        this.password = "";
+        this.confirmPassword = "";
+        this.firstname = "";
+        this.lastname = "";
+        this.phone = "";
+        this.lineKey = "";
+        this.deviceID = [];
+      } else if (res.status === true) {
+        this.errorModal = true;
+        this.errorMessage = "Add User Complete";
       } else {
         this.username = "";
         this.password = "";
+        this.confirmPassword = "";
         this.firstname = "";
         this.lastname = "";
         this.phone = "";
