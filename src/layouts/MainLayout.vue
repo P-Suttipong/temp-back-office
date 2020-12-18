@@ -299,9 +299,9 @@ export default {
       console.log("DATE NOW", date);
       console.log("LOGIN AT", loginAt);
       if (date - loginAt > 1500000) {
-        // await this.$store.dispatch("logout");
-        // await this.$router.push("/login");
-        // location.reload();
+        await this.$store.dispatch("logout");
+        await this.$router.push("/login");
+        location.reload();
       }
     }
   },
